@@ -16,7 +16,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.maccha_koubou.transition_guidepost.service.duration
 import com.maccha_koubou.transition_guidepost.storage.user
 import com.maccha_koubou.transition_guidepost.ui.theme.*
 import java.time.LocalDate
@@ -46,7 +45,7 @@ fun DurationBanner() {
             ) {
                 Text(
                     //Show a welcome text if the duration is null
-                    text = user.duration()?.toString() ?: "你好！",
+                    text = user.duration()?.toString() ?: "嗨！",
                     style = Typography.headlineLarge
                     )
                 Text(
