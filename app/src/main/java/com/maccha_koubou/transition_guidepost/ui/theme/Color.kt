@@ -2,10 +2,20 @@ package com.maccha_koubou.transition_guidepost.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
+val White = Color(0xFFFFFFFF)
+val Gray = Color(0xFF76727C)
+val Black = Color(0xFF1D1B20)
+val BackgroundGray = Color(0xFFF2F5F8)
 
-val Purple40 = Color(0xFF6650a4)
-val PurpleGrey40 = Color(0xFF625b71)
-val Pink40 = Color(0xFF7D5260)
+val LightPurple = Color(0xFFE5D9FF)
+val Purple = Color(0xFF764AD5)
+val DarkPurple = Color(0xFF502D9C)
+
+val LightBlue = Color(0xFFDEEDFF)
+val Blue = Color(0xFF0074E8)
+val DarkBlue = Color(0xFF004392)
+
+val LightPink = Color(0xFFFFE6EC)
+val Pink = Color(0xFFEA005F)
+
+val Orange = Color(0xFFFF5C00)
