@@ -10,7 +10,7 @@ class Dosage(dosage: Float, unitWithoutInterval: String, interval: Int)
 // Classes of single records
 open class Record()
 
-class CommonRecord(
+class TestRecord(
     val data: Float,
     val time: LocalTime,
 ): Record()
@@ -26,12 +26,23 @@ class CycleRecord(
     val endTime: LocalTime?,
 ): Record()
 
-open class RecordedData(
+class TimePointRecord(
+    val time: LocalTime
+): Record()
+
+class BreastRecord(
+    val upperBust: Float,
+    val lowerBust: Float,
+    val time: LocalTime,
+): Record()
+
+// Classes of record series
+open class RecordedData<T>(
     open val name: String,
     open var isDataActive: Boolean,
-    open var alarmCycle: AlarmCycle?,
+    open var alarmCycle: AlarmCycle?
 ){
-
+    open var dataList = mutableListOf<T>()
 }
 
 data class TestData(
@@ -40,8 +51,7 @@ data class TestData(
     val recommendationValue: Pair<Float, Float>?, // Lower value & Higher value
     override var isDataActive: Boolean,
     override var alarmCycle: AlarmCycle?,
-): RecordedData(name, isDataActive, alarmCycle) {
-
+): RecordedData<TestRecord>(name, isDataActive, alarmCycle) {
 }
 
 data class MedicationData(
@@ -49,7 +59,7 @@ data class MedicationData(
     val defaultDosage: Dosage,
     override var isDataActive: Boolean,
     override var alarmCycle: AlarmCycle?,
-): RecordedData(name, isDataActive, alarmCycle) {
+): RecordedData<MedicationRecord>(name, isDataActive, alarmCycle) {
     var currentDosage = defaultDosage
 }
 
@@ -57,7 +67,7 @@ data class TimePointData(
     override val name: String,
     override var isDataActive: Boolean,
     override var alarmCycle: AlarmCycle?,
-): RecordedData(name, isDataActive, alarmCycle) {
+): RecordedData<TimePointRecord>(name, isDataActive, alarmCycle) {
 
 }
 
@@ -65,7 +75,7 @@ data class BreastData(
     override val name: String,
     override var isDataActive: Boolean,
     override var alarmCycle: AlarmCycle?,
-): RecordedData(name, isDataActive, alarmCycle) {
+): RecordedData<BreastRecord>(name, isDataActive, alarmCycle) {
 
 }
 
@@ -73,6 +83,6 @@ data class CycleData(
     override val name: String,
     override var isDataActive: Boolean,
     override var alarmCycle: AlarmCycle?,
-): RecordedData(name, isDataActive, alarmCycle) {
+): RecordedData<CycleRecord>(name, isDataActive, alarmCycle) {
 
 }

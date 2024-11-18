@@ -6,15 +6,25 @@ open class AlarmCycle {
 
 }
 
-class EveryXMonths(val x: Int = 1, val cycle: CycleType = CycleType.MONTHLY): AlarmCycle() {
+class EveryXMonths(
+    val x: Int = 1,
+    val cycle: CycleType = CycleType.MONTHLY
+): AlarmCycle() {
 
 }
 
-class EveryXWeeks(val x: Int = 1, val dayOfWeek: List<DayOfWeek>, val cycle: CycleType = CycleType.WEEKLY): AlarmCycle() {
+class EveryXWeeks(
+    val x: Int = 1,
+    val dayOfWeek: List<DayOfWeek>,
+    val cycle: CycleType = CycleType.WEEKLY
+): AlarmCycle() {
 
 }
 
-class EveryXDays(val x: Int = 1, val cycle: CycleType = CycleType.DAILY): AlarmCycle() {
+class EveryXDays(
+    val x: Int = 1,
+    val cycle: CycleType = CycleType.DAILY
+): AlarmCycle() {
 
 }
 

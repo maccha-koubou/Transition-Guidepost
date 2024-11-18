@@ -2,7 +2,7 @@ package com.maccha_koubou.transition_guidepost.storage
 
 import com.maccha_koubou.transition_guidepost.model.TestData
 
-//Default data of E2, T and PRL
+// Default data of E2, T and PRL
 val e2Unit = mapOf("pmol/L" to 1f, "pg/mL" to 272.38f)
 val e2FeminizationRecommendation = Pair(367.1341f, 734.2683f)
 val e2MasculinizationRecommendation = Pair(36.71341f, 183.5670f)

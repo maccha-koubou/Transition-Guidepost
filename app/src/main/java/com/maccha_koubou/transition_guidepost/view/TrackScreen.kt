@@ -10,6 +10,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.maccha_koubou.transition_guidepost.storage.e2Data
+import com.maccha_koubou.transition_guidepost.storage.tData
 import com.maccha_koubou.transition_guidepost.ui.theme.BackgroundGray
 
 @Preview
@@ -26,14 +28,14 @@ fun TrackScreen() {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            when () {
-                Column(Modifier.weight(1f)) {
-                    HormoneCard()
-                }
+            Column(Modifier.weight(1f)) {
+                HormoneCard()
             }
+
             Spacer(modifier = Modifier.height(8.dp))
+
             Column(Modifier.weight(1f)){
-                DataCard()
+                //DataCard()
             }
         }
     }

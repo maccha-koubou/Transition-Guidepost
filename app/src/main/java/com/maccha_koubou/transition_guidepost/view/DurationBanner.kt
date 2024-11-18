@@ -51,7 +51,7 @@ fun DurationBanner() {
                 Text(
                     //Show a welcome text if the duration is null
                     text = when (user.duration()) {
-                        null -> "点击以记录您的激素肯定治疗天数"
+                        null -> "点击记录您的激素肯定治疗天数"
                         else -> "天激素肯定治疗时长"
                     },
                     style = Typography.bodyMedium
@@ -59,11 +59,11 @@ fun DurationBanner() {
             }
         }
 
-        //An button for more functions, including Login, Sharing data and Settings
+        // An button for more functions, including Login, Sharing data and Settings
         IconButton(
             onClick = { /* More Options Menu */ },
             modifier = Modifier.size(48.dp),
-            colors = largeButtonColors
+            colors = largeIconButtonColors
         ) {
             Icon(
                 Icons.Filled.Menu,
