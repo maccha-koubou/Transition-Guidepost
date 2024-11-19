@@ -14,11 +14,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -28,6 +31,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.maccha_koubou.transition_guidepost.storage.e2Data
 import com.maccha_koubou.transition_guidepost.storage.tData
+import com.maccha_koubou.transition_guidepost.ui.theme.AddButtonColors
+import com.maccha_koubou.transition_guidepost.ui.theme.IconButtonColors
 import com.maccha_koubou.transition_guidepost.ui.theme.LightPurple
 import com.maccha_koubou.transition_guidepost.ui.theme.Purple
 import com.maccha_koubou.transition_guidepost.ui.theme.Typography
@@ -36,7 +41,7 @@ import com.maccha_koubou.transition_guidepost.ui.theme.cardColors
 import com.maccha_koubou.transition_guidepost.ui.theme.largeMainButtonColors
 
 
-
+const val hormoneCardTitle = "我的激素水平"
 
 @Preview
 @Composable
@@ -68,7 +73,7 @@ fun EmptyHormoneContent() {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "我的激素水平",
+                    text = hormoneCardTitle,
                     style = Typography.titleLarge
                 )
             }
@@ -102,7 +107,7 @@ fun EmptyHormoneContent() {
                     Spacer(Modifier.size(ButtonDefaults.IconSpacing))
                     Text(
                         text = "添加数据",
-                        style = Typography.titleSmall,
+                        style = Typography.labelLarge,
                         color = White
                     )
                 }
@@ -117,31 +122,59 @@ fun HormoneContent() {
     Box(modifier = Modifier.fillMaxSize()) {
         Column {
 
-            // Title of the card
+            // Title of the card and icon buttons
             Row(
                 Modifier
                     .fillMaxWidth()
                     .padding(16.dp, 4.dp, 4.dp ,0.dp)
                     .height(48.dp),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.End
             ) {
-                Text(
-                    text = "我的激素水平",
-                    style = Typography.titleLarge
-                )
+
+                //Title
+                Row(
+                    Modifier.weight(1f)
+                ) {
+                    Text(
+                        text = hormoneCardTitle,
+                        style = Typography.titleLarge
+                    )
+                }
+
+                Row {
+                    // Chart Setting button
+                    IconButton(
+                        onClick = { /* Chart Setting Screen */ },
+                        modifier = Modifier.size(48.dp),
+                        colors = IconButtonColors
+                    ) {
+                        Icon(
+                            Icons.Filled.Menu,
+                            contentDescription = "图表设置"
+                        )
+                    }
+
+                    // Add data button
+                    IconButton(
+                        onClick = { /* Add Data Screen */ },
+                        modifier = Modifier.size(48.dp).padding(12.dp),
+                        colors = AddButtonColors
+                    ) {
+                        Icon(
+                            Icons.Filled.Add,
+                            contentDescription = "添加数据"
+                        )
+                    }
+                }
             }
 
-            // Add data button & Description
-            Column(
+            // Chart
+            Box(
                 Modifier
                     .fillMaxSize()
-                    .padding(16.dp)
-                    .padding(end = 0.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(
-                    space = 16.dp,
-                    alignment = Alignment.CenterVertically
-                )
+                    .padding(16.dp, 0.dp, 16.dp ,12.dp)
+                    .border(1.dp, LightPurple) // Only for testing
             ) {
             }
         }

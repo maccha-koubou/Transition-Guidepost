@@ -5,7 +5,7 @@ import java.time.LocalTime
 // Class of a dosage data
 // unitWithoutInterval: The unit of each dose (NOT includes the interval)
 // interval: Days of interval
-class Dosage(dosage: Float, unitWithoutInterval: String, interval: Int)
+class Dosage(var dosage: Float, var unitWithoutInterval: String, var interval: Int)
 
 // Classes of single records
 interface Record

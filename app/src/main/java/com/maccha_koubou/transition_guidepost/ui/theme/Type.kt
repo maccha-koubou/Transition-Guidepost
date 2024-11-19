@@ -37,12 +37,13 @@ val Typography = Typography(
         letterSpacing = 0.1.sp
     ),
 
-    // Title of the items of lists or the button texts
+    // Title of the items of lists
     titleSmall = TextStyle(
+        color = Black,
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Normal,
-        fontSize = 14.sp,
-        lineHeight = 20.sp,
+        fontSize = 16.sp,
+        lineHeight = 24.sp,
         letterSpacing = 0.25.sp
     ),
 
@@ -76,7 +77,16 @@ val Typography = Typography(
         letterSpacing = 0.25.sp
     ),
 
-    // Item names in the diagram
+    // Button texts
+    labelLarge = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Normal,
+        fontSize = 14.sp,
+        lineHeight = 20.sp,
+        letterSpacing = 0.25.sp
+    ),
+
+    // Item names in the diagram or the navigation description
     labelMedium = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.SemiBold,

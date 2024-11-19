@@ -14,10 +14,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -32,21 +36,25 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.maccha_koubou.transition_guidepost.storage.bodyItemList
+import com.maccha_koubou.transition_guidepost.ui.theme.AddButtonColors
+import com.maccha_koubou.transition_guidepost.ui.theme.IconButtonColors
 import com.maccha_koubou.transition_guidepost.ui.theme.LightPurple
 import com.maccha_koubou.transition_guidepost.ui.theme.Typography
 import com.maccha_koubou.transition_guidepost.ui.theme.White
 import com.maccha_koubou.transition_guidepost.ui.theme.largeMainButtonColors
 import kotlinx.coroutines.launch
 
+const val bodyCardTitle = "我的生活事项"
+
 @Preview
 @Composable
 fun BodyCard() {
     Box(modifier = Modifier.fillMaxSize()) {
-        /*when (e2Data.dataList.isEmpty() && tData.dataList.isEmpty()) {
+        when (bodyItemList.isEmpty()) {
             true -> EmptyBodyContent()
-            else -> BodyContent()
-        }*/
-        EmptyBodyContent()
+            else -> /*BodyContent()*/EmptyBodyContent()
+        }
     }
 }
 
@@ -66,7 +74,7 @@ fun EmptyBodyContent() {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "我的生活事项",
+                    text = bodyCardTitle,
                     style = Typography.titleLarge
                 )
             }
@@ -100,7 +108,7 @@ fun EmptyBodyContent() {
                     Spacer(Modifier.size(ButtonDefaults.IconSpacing))
                     Text(
                         text = "添加数据",
-                        style = Typography.titleSmall,
+                        style = Typography.labelLarge,
                         color = White
                     )
                 }

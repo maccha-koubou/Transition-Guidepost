@@ -60,11 +60,11 @@ fun DurationBanner() {
         IconButton(
             onClick = { /* More Options Menu */ },
             modifier = Modifier.size(48.dp),
-            colors = largeIconButtonColors
+            colors = IconButtonColors
         ) {
             Icon(
                 Icons.Filled.Menu,
-                contentDescription = "More options"
+                contentDescription = "更多选项"
             )
         }
     }

@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.maccha_koubou.transition_guidepost.storage.healthItemList
 import com.maccha_koubou.transition_guidepost.ui.theme.LightPurple
 import com.maccha_koubou.transition_guidepost.ui.theme.Typography
 import com.maccha_koubou.transition_guidepost.ui.theme.White
@@ -34,11 +35,10 @@ import com.maccha_koubou.transition_guidepost.ui.theme.largeMainButtonColors
 @Composable
 fun HealthCard() {
     Box(modifier = Modifier.fillMaxSize()) {
-        /*when (e2Data.dataList.isEmpty() && tData.dataList.isEmpty()) {
+        when (healthItemList.isEmpty()) {
             true -> EmptyHealthContent()
-            else -> HealthContent()
-        }*/
-        EmptyHealthContent()
+            else -> /*HealthContent()*/EmptyHealthContent()
+        }
     }
 }
 
@@ -92,7 +92,7 @@ fun EmptyHealthContent() {
                     Spacer(Modifier.size(ButtonDefaults.IconSpacing))
                     Text(
                         text = "添加数据",
-                        style = Typography.titleSmall,
+                        style = Typography.labelLarge,
                         color = White
                     )
                 }
