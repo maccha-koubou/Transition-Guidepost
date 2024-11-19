@@ -1,5 +1,6 @@
 package com.maccha_koubou.transition_guidepost.view
 
+import android.hardware.lights.Light
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,6 +18,8 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryTabRow
@@ -33,12 +36,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.maccha_koubou.transition_guidepost.storage.e2Data
+import com.maccha_koubou.transition_guidepost.storage.tData
 import com.maccha_koubou.transition_guidepost.ui.theme.*
 
 
 // Empty card with tab bar
+@Preview
 @Composable
-fun DataCard(content: @Composable () -> Unit) {
+fun DataCard() {
+    var dataTypeState by remember { mutableStateOf(0) }
+    val dataTabTitles = listOf("用药", "生活", "健康")
     Card(
         modifier = Modifier.fillMaxSize(),
         shape = RoundedCornerShape(12.dp),
@@ -50,84 +58,18 @@ fun DataCard(content: @Composable () -> Unit) {
                 .weight(1f),
             verticalArrangement = Arrangement.Bottom
         ) {
-            content()
-            DataTypeTabBar()
+            MedicationCard()
+            /*when (dataTypeState) {
+                0 -> MedicationCard()
+                1 -> BodyCard()
+                2 -> HealthCard()
+            }*/
         }
-    }
-}
-
-@Preview
-@Composable
-fun DataTypeTabBar() {
-    var state by remember { mutableStateOf(0) }
-    val tabTitles = listOf("用药", "生活", "健康")
-    Column {
-        TabRow(selectedTabIndex = state) {
-            tabTitles.forEachIndexed { index, title ->
-                BottomTab(
-                    selected = state == index,
-                    onClick = { state = index },
-                    title = title
-                )
-            }
-        }
-    }
-}
-
-@Preview
-@Composable
-fun EmptyDataCard() {
-    Box(modifier = Modifier.fillMaxSize()) {
-        Column {
-
-            // Title of the card
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp, 4.dp, 4.dp ,0.dp)
-                    .height(48.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "我的激素水平",
-                    style = Typography.titleLarge
-                )
-            }
-
-            // Add data button & Description
-            Column(
-                Modifier
-                    .fillMaxSize()
-                    .padding(16.dp, 0.dp, 16.dp ,16.dp)
-                    .border(1.dp, LightPurple, RoundedCornerShape(12.dp)),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(
-                    space = 16.dp,
-                    alignment = Alignment.CenterVertically
-                )
-            ) {
-                Text(
-                    text = "添加数据后，\n您就可以在这里\n通过图表追踪激素数据",
-                    style = Typography.bodySmall,
-                    textAlign = TextAlign.Center
-                )
-                Button(
-                    onClick = { /* Add data */ },
-                    colors = largeMainButtonColors
-                ) {
-                    Icon(
-                        Icons.Filled.Add,
-                        contentDescription = null,
-                        modifier = Modifier.size(ButtonDefaults.IconSize)
-                    )
-                    Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                    Text(
-                        text = "添加数据",
-                        style = Typography.titleSmall,
-                        color = White
-                    )
-                }
-            }
-        }
+        HorizontalDivider(thickness = 1.dp, color = LightPurple)
+        BottomTabRow(
+            dataTypeState,
+            dataTabTitles,
+            { newState -> dataTypeState = newState }
+        )
     }
 }

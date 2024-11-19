@@ -14,5 +14,5 @@ val tMasculinizationRecommendation = Pair(14f, 25.4f)
 val prlUnit = mapOf("mIU/L" to 1f, "ng/mL" to 0.04717f, "ng/dL" to 4.717f)
 val prlFeminizationRecommendation = Pair(101.55f, 493.96f)
 
-val e2Data = TestData("雌二醇", e2Unit, e2FeminizationRecommendation, true, null)
-val tData = TestData("睾酮", tUnit, tFeminizationRecommendation, true, null)
+val e2Data = TestData("雌二醇", e2Unit, e2FeminizationRecommendation, true, false, null)
+val tData = TestData("睾酮", tUnit, tFeminizationRecommendation, true, false, null)

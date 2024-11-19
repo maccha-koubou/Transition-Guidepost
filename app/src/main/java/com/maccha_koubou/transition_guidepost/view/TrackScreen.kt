@@ -35,7 +35,7 @@ fun TrackScreen() {
             Spacer(modifier = Modifier.height(8.dp))
 
             Column(Modifier.weight(1f)){
-                //DataCard()
+                DataCard()
             }
         }
     }

@@ -9,3 +9,6 @@ val largeIconButtonColors = IconButtonColors(Color.Transparent, Gray, White, Whi
 val largeMainButtonColors = ButtonColors(DarkPurple, White, Gray, White)
 
 val cardColors = CardColors(White, Black, Gray, Gray)
+
+val tabActiveIndicatorColors = CardColors(DarkPurple, Color.Transparent, Color.Transparent, Color.Transparent)
+val tabInactiveIndicatorColors = CardColors(Color.Transparent, Color.Transparent, Color.Transparent, Color.Transparent)

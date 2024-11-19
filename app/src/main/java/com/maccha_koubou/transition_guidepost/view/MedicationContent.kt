@@ -14,10 +14,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,36 +24,26 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.maccha_koubou.transition_guidepost.storage.e2Data
-import com.maccha_koubou.transition_guidepost.storage.tData
 import com.maccha_koubou.transition_guidepost.ui.theme.LightPurple
-import com.maccha_koubou.transition_guidepost.ui.theme.Purple
 import com.maccha_koubou.transition_guidepost.ui.theme.Typography
 import com.maccha_koubou.transition_guidepost.ui.theme.White
-import com.maccha_koubou.transition_guidepost.ui.theme.cardColors
 import com.maccha_koubou.transition_guidepost.ui.theme.largeMainButtonColors
-
-
-
 
 @Preview
 @Composable
-fun HormoneCard() {
-    Card(
-        modifier = Modifier.fillMaxSize(),
-        shape = RoundedCornerShape(12.dp),
-        colors = cardColors
-    ) {
-        when (e2Data.dataList.isEmpty() && tData.dataList.isEmpty()) {
-            true -> EmptyHormoneContent()
-            else -> HormoneContent()
-        }
+fun MedicationCard() {
+    Box(modifier = Modifier.fillMaxSize()) {
+        /*when (e2Data.dataList.isEmpty() && tData.dataList.isEmpty()) {
+            true -> EmptyMedicationContent()
+            else -> MedicationContent()
+        }*/
+        EmptyMedicationContent()
     }
 }
 
 @Preview
 @Composable
-fun EmptyHormoneContent() {
+fun EmptyMedicationContent() {
     Box(modifier = Modifier.fillMaxSize()) {
         Column {
 
@@ -68,7 +56,7 @@ fun EmptyHormoneContent() {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "我的激素水平",
+                    text = "我的药物使用",
                     style = Typography.titleLarge
                 )
             }
@@ -86,7 +74,7 @@ fun EmptyHormoneContent() {
                 )
             ) {
                 Text(
-                    text = "添加数据后，\n您就可以在这里\n通过图表追踪激素数据",
+                    text = "添加数据后，\n您可以获取用药提醒，\n或通过图表追踪用药数据",
                     style = Typography.bodySmall,
                     textAlign = TextAlign.Center
                 )
@@ -106,43 +94,6 @@ fun EmptyHormoneContent() {
                         color = White
                     )
                 }
-            }
-        }
-    }
-}
-
-@Preview
-@Composable
-fun HormoneContent() {
-    Box(modifier = Modifier.fillMaxSize()) {
-        Column {
-
-            // Title of the card
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp, 4.dp, 4.dp ,0.dp)
-                    .height(48.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "我的激素水平",
-                    style = Typography.titleLarge
-                )
-            }
-
-            // Add data button & Description
-            Column(
-                Modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
-                    .padding(end = 0.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(
-                    space = 16.dp,
-                    alignment = Alignment.CenterVertically
-                )
-            ) {
             }
         }
     }

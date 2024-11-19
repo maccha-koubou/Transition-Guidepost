@@ -50,10 +50,7 @@ fun DurationBanner() {
                     )
                 Text(
                     //Show a welcome text if the duration is null
-                    text = when (user.duration()) {
-                        null -> "点击记录您的激素肯定治疗天数"
-                        else -> "天激素肯定治疗时长"
-                    },
+                    text = user.duration()?.let { "天激素肯定治疗时长" } ?: "点击记录您的激素肯定治疗天数",
                     style = Typography.bodyMedium
                 )
             }

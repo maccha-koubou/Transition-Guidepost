@@ -9,7 +9,7 @@ data class UserInfo(
     var stopDuration: Int = 0
 ) {
     fun duration(): Int? {
-        //Calculate user's GAHT duration if user's startDate is not a null
+        // Calculate user's GAHT duration if user's startDate is not a null
         return startDate?.let {
             (ChronoUnit.DAYS.between(startDate, LocalDate.now()) - stopDuration).toInt()
         }
