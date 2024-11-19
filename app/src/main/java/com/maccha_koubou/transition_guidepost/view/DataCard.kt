@@ -58,12 +58,11 @@ fun DataCard() {
                 .weight(1f),
             verticalArrangement = Arrangement.Bottom
         ) {
-            MedicationCard()
-            /*when (dataTypeState) {
+            when (dataTypeState) {
                 0 -> MedicationCard()
                 1 -> BodyCard()
                 2 -> HealthCard()
-            }*/
+            }
         }
         HorizontalDivider(thickness = 1.dp, color = LightPurple)
         BottomTabRow(

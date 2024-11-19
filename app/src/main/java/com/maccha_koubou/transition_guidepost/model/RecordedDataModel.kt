@@ -1,13 +1,12 @@
 package com.maccha_koubou.transition_guidepost.model
 
 // Classes of record series
-open class RecordedData<T>(
-    open val name: String,
-    open var isDataActive: Boolean,
-    open var isAlarmActive: Boolean,
-    open var alarmCycle: AlarmCycle?
-){
-    open var dataList = mutableListOf<T>()
+interface RecordedData<T>{
+    val name: String
+    var isDataActive: Boolean
+    var isAlarmActive: Boolean
+    var alarmCycle: AlarmCycle?
+    var dataList: MutableList<T>
 }
 
 data class TestData(
@@ -17,7 +16,8 @@ data class TestData(
     override var isDataActive: Boolean,
     override var isAlarmActive: Boolean,
     override var alarmCycle: AlarmCycle?,
-): RecordedData<TestRecord>(name, isDataActive, isAlarmActive, alarmCycle) {
+): RecordedData<TestRecord> {
+    override var dataList = mutableListOf<TestRecord>()
 }
 
 data class MedicationData(
@@ -26,8 +26,9 @@ data class MedicationData(
     override var isDataActive: Boolean,
     override var isAlarmActive: Boolean,
     override var alarmCycle: AlarmCycle?,
-): RecordedData<MedicationRecord>(name, isDataActive, isAlarmActive, alarmCycle) {
+): RecordedData<MedicationRecord> {
     var currentDosage = defaultDosage
+    override var dataList = mutableListOf<MedicationRecord>()
 }
 
 data class TimePointData(
@@ -35,8 +36,8 @@ data class TimePointData(
     override var isDataActive: Boolean,
     override var isAlarmActive: Boolean,
     override var alarmCycle: AlarmCycle?,
-): RecordedData<TimePointRecord>(name, isDataActive, isAlarmActive, alarmCycle) {
-
+): RecordedData<TimePointRecord> {
+    override var dataList = mutableListOf<TimePointRecord>()
 }
 
 data class BreastData(
@@ -44,8 +45,8 @@ data class BreastData(
     override var isDataActive: Boolean,
     override var isAlarmActive: Boolean,
     override var alarmCycle: AlarmCycle?,
-): RecordedData<BreastRecord>(name, isDataActive, isAlarmActive, alarmCycle) {
-
+): RecordedData<BreastRecord> {
+    override var dataList = mutableListOf<BreastRecord>()
 }
 
 data class CycleData(
@@ -53,6 +54,6 @@ data class CycleData(
     override var isDataActive: Boolean,
     override var isAlarmActive: Boolean,
     override var alarmCycle: AlarmCycle?,
-): RecordedData<CycleRecord>(name, isDataActive, isAlarmActive, alarmCycle) {
-
+): RecordedData<CycleRecord> {
+    override var dataList = mutableListOf<CycleRecord>()
 }

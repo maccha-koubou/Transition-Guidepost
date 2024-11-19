@@ -2,6 +2,7 @@ package com.maccha_koubou.transition_guidepost.view
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.foundation.layout.Arrangement
@@ -33,7 +34,8 @@ fun BottomTab(selected: Boolean, onClick: () -> Unit, title: String) {
     Column(
         Modifier
             .height(48.dp)
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .clickable(onClick = onClick),
         verticalArrangement = Arrangement.Top
     ) {
         Card(
@@ -83,7 +85,7 @@ fun BottomTabRow(
             tabTitles.forEachIndexed { index, title ->
                 BottomTab(
                     selected = typeState == index,
-                    onClick = { onTabClick(typeState) },
+                    onClick = { onTabClick(index) },
                     title = title
                 )
             }

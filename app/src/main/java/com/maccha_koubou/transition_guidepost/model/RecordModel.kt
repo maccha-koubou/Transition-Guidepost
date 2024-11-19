@@ -8,30 +8,30 @@ import java.time.LocalTime
 class Dosage(dosage: Float, unitWithoutInterval: String, interval: Int)
 
 // Classes of single records
-open class Record()
+interface Record
 
 class TestRecord(
     val data: Float,
     val time: LocalTime,
-): Record()
+): Record
 
 class MedicationRecord(
     val data: Float,
     var dosage: Dosage,
     val time: LocalTime,
-): Record()
+): Record
 
 class CycleRecord(
     val startTime: LocalTime,
     val endTime: LocalTime?,
-): Record()
+): Record
 
 class TimePointRecord(
     val time: LocalTime
-): Record()
+): Record
 
 class BreastRecord(
     val upperBust: Float,
     val lowerBust: Float,
     val time: LocalTime,
-): Record()
+): Record
