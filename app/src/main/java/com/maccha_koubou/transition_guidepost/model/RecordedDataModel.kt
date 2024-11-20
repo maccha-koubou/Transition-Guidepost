@@ -3,6 +3,7 @@ package com.maccha_koubou.transition_guidepost.model
 import android.graphics.drawable.Icon
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import java.time.LocalDateTime
 
 // Classes of record series
 interface RecordedData<T: DataRecord>{
@@ -41,6 +42,11 @@ data class MedicationData(
 ): RecordedData<MedicationRecord> {
     var currentDosage = defaultDosage
     override var dataList = mutableListOf<MedicationRecord>()
+
+    fun addCommonRecord() {
+        val newRecord = MedicationRecord(currentDosage.dosage, LocalDateTime.now())
+        dataList.add(newRecord)
+    }
 }
 
 data class TimePointData(

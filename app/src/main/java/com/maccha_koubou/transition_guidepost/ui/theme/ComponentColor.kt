@@ -10,6 +10,11 @@ val IconButtonColors = IconButtonColors(Color.Transparent, Gray, White, White)
 val AddButtonColors = IconButtonColors(LightPurple, Purple, LightPurple, White)
 val largeMainButtonColors = ButtonColors(DarkPurple, White, Gray, White)
 
+val CheckBoxUncheckedColors = IconButtonColors(White, Gray, White, BackgroundGray)
+val CheckBoxUncheckedMedicationColors = IconButtonColors(White, Color.Transparent, White, BackgroundGray)
+val CheckBoxCheckedColors = IconButtonColors(Gray, White, BackgroundGray, White)
+val CheckBoxDuringCycleColors = IconButtonColors(DarkPurple, White, LightPurple, White)
+
 val cardColors = CardColors(White, Black, Gray, Gray)
 
 val tabActiveIndicatorColors = CardColors(DarkPurple, Color.Transparent, Color.Transparent, Color.Transparent)

@@ -17,7 +17,6 @@ class TestRecord(
 
 class MedicationRecord(
     val data: Float,
-    var dosage: Dosage,
     val time: LocalDateTime,
 ): DataRecord
 
