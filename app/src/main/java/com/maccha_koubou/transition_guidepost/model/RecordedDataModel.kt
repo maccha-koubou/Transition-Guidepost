@@ -5,7 +5,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 
 // Classes of record series
-interface RecordedData<T: Record>{
+interface RecordedData<T: DataRecord>{
     val name: String
     var color: Color
     var icon: ImageVector

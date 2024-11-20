@@ -1,5 +1,6 @@
 package com.maccha_koubou.transition_guidepost.view.component
 
+import android.widget.CheckBox
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -12,7 +13,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,18 +28,20 @@ import com.maccha_koubou.transition_guidepost.addTestData
 import com.maccha_koubou.transition_guidepost.model.BodyData
 import com.maccha_koubou.transition_guidepost.model.BreastData
 import com.maccha_koubou.transition_guidepost.model.CycleData
+import com.maccha_koubou.transition_guidepost.model.DataRecord
 import com.maccha_koubou.transition_guidepost.model.Dosage
 import com.maccha_koubou.transition_guidepost.model.MedicationData
 import com.maccha_koubou.transition_guidepost.model.RecordedData
 import com.maccha_koubou.transition_guidepost.model.TestData
 import com.maccha_koubou.transition_guidepost.model.TimePointData
 import com.maccha_koubou.transition_guidepost.storage.medicationItemList
+import com.maccha_koubou.transition_guidepost.ui.theme.AddButtonColors
 import com.maccha_koubou.transition_guidepost.ui.theme.Typography
 import com.maccha_koubou.transition_guidepost.ui.theme.White
 import java.text.DecimalFormat
 
 @Composable
-fun TrackListItem(item: RecordedData<out com.maccha_koubou.transition_guidepost.model.Record>) {
+fun TrackListItem(item: RecordedData<out DataRecord>) {
     Row(
         Modifier
             .fillMaxWidth()
@@ -73,14 +80,25 @@ fun TrackListItem(item: RecordedData<out com.maccha_koubou.transition_guidepost.
             }
         }
 
+        // Select the responding check box type based on the type of the item
         Row() {
-
+            when (item) {
+                is MedicationData -> {
+                    MedicationCheckBoxAndDescription(item)
+                }
+                is TestData, is BreastData -> {}
+                is CycleData -> {}
+                is TimePointData -> {}
+                else -> {}
+            }
         }
     }
 }
 
-// Generate the description text based on the type of the item
-fun descriptionTextOfItem(item: RecordedData<out com.maccha_koubou.transition_guidepost.model.Record>): String {
+/**
+ * Generate the description text based on the type of the item
+  */
+fun descriptionTextOfItem(item: RecordedData<out DataRecord>): String {
     when (item) {
         is MedicationData -> {
             val dosage = DecimalFormat("#.##").format(item.currentDosage.dosage)
