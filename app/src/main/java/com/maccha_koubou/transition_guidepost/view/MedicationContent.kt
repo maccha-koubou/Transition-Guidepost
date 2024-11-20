@@ -42,6 +42,9 @@ import com.maccha_koubou.transition_guidepost.ui.theme.LightPurple
 import com.maccha_koubou.transition_guidepost.ui.theme.Typography
 import com.maccha_koubou.transition_guidepost.ui.theme.White
 import com.maccha_koubou.transition_guidepost.ui.theme.largeMainButtonColors
+import com.maccha_koubou.transition_guidepost.view.component.AddDataIconButton
+import com.maccha_koubou.transition_guidepost.view.component.ChartListSwitcher
+import com.maccha_koubou.transition_guidepost.view.component.MainButton
 import com.maccha_koubou.transition_guidepost.view.component.TrackListItem
 import kotlinx.coroutines.launch
 
@@ -62,7 +65,7 @@ fun MedicationCard() {
 @Preview
 @Composable
 fun EmptyMedicationContent() {
-    var showAddDataCard by remember { mutableStateOf(false) }
+    var showAddDataMenu by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
 
@@ -100,31 +103,16 @@ fun EmptyMedicationContent() {
                     style = Typography.bodySmall,
                     textAlign = TextAlign.Center
                 )
-                Button(
-                    onClick = { showAddDataCard = true },
-                    colors = largeMainButtonColors
-                ) {
-                    Icon(
-                        Icons.Filled.Add,
-                        contentDescription = null,
-                        modifier = Modifier.size(ButtonDefaults.IconSize)
-                    )
-                    Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                    Text(
-                        text = "添加数据",
-                        style = Typography.labelLarge,
-                        color = White
-                    )
-                }
+                MainButton(false, "添加数据", Icons.Filled.Add) { showAddDataMenu = true }
             }
         }
     }
 
     // Show Add Data Screen
-    if (showAddDataCard) {
+    if (showAddDataMenu) {
         ModalBottomSheet(
             onDismissRequest = {
-                showAddDataCard = false
+                showAddDataMenu = false
             },
             sheetState = sheetState
         ) {
@@ -132,7 +120,7 @@ fun EmptyMedicationContent() {
             Button(onClick = {
                 scope.launch { sheetState.hide() }.invokeOnCompletion {
                     if (!sheetState.isVisible) {
-                        showAddDataCard = false
+                        showAddDataMenu = false
                     }
                 }
             }) {
@@ -171,48 +159,9 @@ fun MedicationContent() {
                 }
 
                 Row {
-                    // Switcher: Chart & List
-                    when (isMedicationList) {
-
-                        //Switch to chart
-                        true ->
-                            IconButton(
-                                onClick = { isMedicationList = false },
-                                modifier = Modifier.size(48.dp),
-                                colors = IconButtonColors
-                            ) {
-                                Icon(
-                                    Icons.Filled.Share,
-                                    contentDescription = "切换为图表显示"
-                                )
-                            }
-
-                        //Switch to list
-                        false ->
-                            IconButton(
-                                onClick = { isMedicationList = true },
-                                modifier = Modifier.size(48.dp),
-                                colors = IconButtonColors
-                            ) {
-                                Icon(
-                                    Icons.Filled.List,
-                                    contentDescription = "切换为列表显示"
-                                )
-                            }
-                    }
-
-                    // Add data button
-                    IconButton(
-                        onClick = { /* Add Data Screen */ },
-                        modifier = Modifier
-                            .size(48.dp)
-                            .padding(12.dp),
-                        colors = AddButtonColors
-                    ) {
-                        Icon(
-                            Icons.Filled.Add,
-                            contentDescription = "添加数据"
-                        )
+                    ChartListSwitcher(isMedicationList, {state -> isMedicationList = state})
+                    AddDataIconButton {
+                        /* Add data menu */
                     }
                 }
             }

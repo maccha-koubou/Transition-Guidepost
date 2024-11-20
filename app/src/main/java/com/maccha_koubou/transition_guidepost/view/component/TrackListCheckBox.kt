@@ -50,11 +50,11 @@ fun MedicationCheckBoxAndDescription(item: MedicationData) {
     var checkBoxDescription by remember { mutableStateOf("点击选框\n打卡用药") }
 
     // Update the checkbox and its description text every 5s
-    LaunchedEffect(onCheckedChange) {
+    LaunchedEffect(item.dataList.lastOrNull()) {
         while (true) {
             isChecked =
                 item.dataList.lastOrNull()?.time
-                    ?.isAfter(LocalDateTime.now().minusMinutes(1)) // False when the last dose time is before 5min
+                    ?.isAfter(LocalDateTime.now().minusMinutes(5)) // False when the last dose time is before 5min
                     ?: false // False when the list is empty
             checkBoxDescription = when (item.dataList.isEmpty())
             {
@@ -108,6 +108,6 @@ fun MedicationCheckBoxAndDescription(item: MedicationData) {
 
     // Show regret menu
     if (showRegretRecordMenu) {
-        RegretMedicationRecordMenu() { state -> showRegretRecordMenu = state }
+        RegretMedicationRecordMenu(item) { state -> showRegretRecordMenu = state }
     }
 }

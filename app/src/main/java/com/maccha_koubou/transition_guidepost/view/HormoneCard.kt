@@ -39,6 +39,9 @@ import com.maccha_koubou.transition_guidepost.ui.theme.Typography
 import com.maccha_koubou.transition_guidepost.ui.theme.White
 import com.maccha_koubou.transition_guidepost.ui.theme.cardColors
 import com.maccha_koubou.transition_guidepost.ui.theme.largeMainButtonColors
+import com.maccha_koubou.transition_guidepost.view.component.AddDataIconButton
+import com.maccha_koubou.transition_guidepost.view.component.ChartListSwitcher
+import com.maccha_koubou.transition_guidepost.view.component.MainButton
 
 
 const val hormoneCardTitle = "我的激素水平"
@@ -95,22 +98,7 @@ fun EmptyHormoneContent() {
                     style = Typography.bodySmall,
                     textAlign = TextAlign.Center
                 )
-                Button(
-                    onClick = { /* Add data */ },
-                    colors = largeMainButtonColors
-                ) {
-                    Icon(
-                        Icons.Filled.Add,
-                        contentDescription = null,
-                        modifier = Modifier.size(ButtonDefaults.IconSize)
-                    )
-                    Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                    Text(
-                        text = "添加数据",
-                        style = Typography.labelLarge,
-                        color = White
-                    )
-                }
+                MainButton(false, "添加数据", Icons.Filled.Add) { /* Add data */ }
             }
         }
     }
@@ -154,17 +142,9 @@ fun HormoneContent() {
                             contentDescription = "图表设置"
                         )
                     }
-
-                    // Add data button
-                    IconButton(
-                        onClick = { /* Add Data Screen */ },
-                        modifier = Modifier.size(48.dp).padding(12.dp),
-                        colors = AddButtonColors
-                    ) {
-                        Icon(
-                            Icons.Filled.Add,
-                            contentDescription = "添加数据"
-                        )
+                    // Add Data button
+                    AddDataIconButton {
+                        /* Add data menu */
                     }
                 }
             }

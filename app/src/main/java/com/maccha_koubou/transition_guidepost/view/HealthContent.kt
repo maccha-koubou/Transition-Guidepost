@@ -30,6 +30,7 @@ import com.maccha_koubou.transition_guidepost.ui.theme.LightPurple
 import com.maccha_koubou.transition_guidepost.ui.theme.Typography
 import com.maccha_koubou.transition_guidepost.ui.theme.White
 import com.maccha_koubou.transition_guidepost.ui.theme.largeMainButtonColors
+import com.maccha_koubou.transition_guidepost.view.component.MainButton
 
 @Preview
 @Composable
@@ -80,22 +81,7 @@ fun EmptyHealthContent() {
                     style = Typography.bodySmall,
                     textAlign = TextAlign.Center
                 )
-                Button(
-                    onClick = { },
-                    colors = largeMainButtonColors
-                ) {
-                    Icon(
-                        Icons.Filled.Add,
-                        contentDescription = null,
-                        modifier = Modifier.size(ButtonDefaults.IconSize)
-                    )
-                    Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                    Text(
-                        text = "添加数据",
-                        style = Typography.labelLarge,
-                        color = White
-                    )
-                }
+                MainButton(false, "添加数据", Icons.Filled.Add) { /* Add data */ }
             }
         }
     }
