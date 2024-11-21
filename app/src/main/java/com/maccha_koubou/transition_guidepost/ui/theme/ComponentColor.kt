@@ -2,9 +2,11 @@ package com.maccha_koubou.transition_guidepost.ui.theme
 
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.CardColors
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.ListItemColors
 import androidx.compose.material3.NavigationBarItemColors
+import androidx.compose.material3.TopAppBarColors
 import androidx.compose.ui.graphics.Color
 
 val IconButtonColors = IconButtonColors(Color.Transparent, Gray, White, White)
@@ -24,5 +26,7 @@ val tabActiveIndicatorColors = CardColors(DarkPurple, Color.Transparent, Color.T
 val tabInactiveIndicatorColors = CardColors(Color.Transparent, Color.Transparent, Color.Transparent, Color.Transparent)
 
 val navigationBarColors = NavigationBarItemColors(DarkPurple, DarkPurple, Color.Transparent, Gray, Gray, Gray, Gray)
+@OptIn(ExperimentalMaterial3Api::class)
+val titleBarColors = TopAppBarColors(White, White, Gray, Black, DarkPurple)
 
 val menuItemColors = ListItemColors(White, Black, DarkPurple, Gray, Gray, Gray, Gray, Gray, Gray)

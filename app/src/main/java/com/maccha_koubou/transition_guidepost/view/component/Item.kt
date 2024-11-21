@@ -3,8 +3,10 @@ package com.maccha_koubou.transition_guidepost.view.component
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
@@ -28,7 +30,7 @@ fun MenuItem(content: String, icon: ImageVector, event: () -> Unit) {
 }
 
 @Composable
-fun DetailItem(isAvailable: Boolean, isTitleBar: Boolean, title: String, content: @Composable () -> Unit) {
+fun DetailItem(isAvailable: Boolean, isTitleBar: Boolean, title: String, content: @Composable (isAvailable: Boolean) -> Unit) {
     // Use bold style if this item is used in title bar
     var titleStyle =
         if (isTitleBar) {
@@ -41,7 +43,8 @@ fun DetailItem(isAvailable: Boolean, isTitleBar: Boolean, title: String, content
 
     Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.Start)
+        horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.Start),
+        verticalAlignment = Alignment.CenterVertically
     ) {
         // Title
         Row(
@@ -56,9 +59,10 @@ fun DetailItem(isAvailable: Boolean, isTitleBar: Boolean, title: String, content
         // Detail buttons
         Row(
             modifier = Modifier.weight(1f),
-            horizontalArrangement = Arrangement.End
+            horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            content()
+            content(isAvailable)
         }
     }
 }

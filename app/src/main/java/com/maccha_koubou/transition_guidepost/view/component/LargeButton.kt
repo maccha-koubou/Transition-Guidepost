@@ -2,9 +2,11 @@ package com.maccha_koubou.transition_guidepost.view.component
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -20,6 +22,7 @@ import com.maccha_koubou.transition_guidepost.ui.theme.Gray
 import com.maccha_koubou.transition_guidepost.ui.theme.LightPurple
 import com.maccha_koubou.transition_guidepost.ui.theme.Typography
 import com.maccha_koubou.transition_guidepost.ui.theme.White
+import com.maccha_koubou.transition_guidepost.ui.theme.largeInputButtonColors
 import com.maccha_koubou.transition_guidepost.ui.theme.largeMainButtonColors
 import com.maccha_koubou.transition_guidepost.ui.theme.largeSecondaryButtonColors
 
@@ -79,11 +82,15 @@ fun SecondaryButton(isFill: Boolean, text: String, event: () -> Unit) {
 fun InputButton(isFill: Boolean, isAvailable: Boolean, text: String, event: () -> Unit) {
     Button(
         onClick = { event() },
-        colors = largeMainButtonColors,
+        colors = largeInputButtonColors,
+        enabled = isAvailable,
         modifier = Modifier
-            .height(36.dp)
+            .padding(vertical = 6.dp)
             .then(if (isFill) Modifier.fillMaxWidth() else Modifier)
-            .then(if (isAvailable) Modifier.border(1.dp, Gray, RoundedCornerShape(18.dp)) else Modifier)
+            .then(if (!isAvailable) Modifier.border(1.dp, Gray, RoundedCornerShape(18.dp)) else Modifier)
+            .height(36.dp),
+        // Make sure that the text is right at the center of the button
+        contentPadding = PaddingValues(vertical = 0.dp)
     ) {
         Text(
             text = text,

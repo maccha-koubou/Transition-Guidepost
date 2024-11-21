@@ -77,9 +77,8 @@ fun DurationBanner() {
 
         // Call the edit data screen
         if (showEditDateScreen) {
-            EditDateScreen(
-                onDismiss = { showEditDateScreen = false }
-            )
+            val navController = localNavController.current
+            navController.navigate("edit_data_screen")
         }
     }
 }
