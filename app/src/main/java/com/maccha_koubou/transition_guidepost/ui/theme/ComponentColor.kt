@@ -11,6 +11,7 @@ val IconButtonColors = IconButtonColors(Color.Transparent, Gray, White, White)
 val AddButtonColors = IconButtonColors(LightPurple, Purple, LightPurple, White)
 val largeMainButtonColors = ButtonColors(DarkPurple, White, Gray, White)
 val largeSecondaryButtonColors = ButtonColors(Color.Transparent, Gray, Color.Transparent, BackgroundGray)
+val largeInputButtonColors = ButtonColors(LightPurple, DarkPurple, White, Gray)
 
 val CheckBoxUncheckedColors = IconButtonColors(White, Gray, White, BackgroundGray)
 val CheckBoxUncheckedMedicationColors = IconButtonColors(White, Color.Transparent, White, BackgroundGray)

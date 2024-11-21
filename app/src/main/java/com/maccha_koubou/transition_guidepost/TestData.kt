@@ -11,7 +11,7 @@ import com.maccha_koubou.transition_guidepost.ui.theme.LightPink
 
 fun addTestData() {
     medicationItemList.apply {
-        add(MedicationData("补佳乐", LightPink, Icons.Filled.Refresh, Dosage(3f, "mg", 1), true, false, null))
-        add(MedicationData("色普龙", LightBlue, Icons.Filled.Info, Dosage(12.5f, "mg", 2), true, false, null))
+        add(MedicationData("补佳乐", LightPink, Icons.Filled.Refresh, Dosage(1f, "mg", 1, 3), true, false, null))
+        add(MedicationData("色普龙", LightBlue, Icons.Filled.Info, Dosage(12.5f, "mg", 2,1), true, false, null))
     }
 }

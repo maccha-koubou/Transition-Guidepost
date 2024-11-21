@@ -61,12 +61,16 @@ fun MedicationCheckBoxAndDescription(item: MedicationData) {
                 true -> "点击选框\n打卡用药"
                 else -> {
                     val totalIntervalHours = Duration.between(item.dataList.last().time, LocalDateTime.now()).toHours()
+                    val totalIntervalMinutes = Duration.between(item.dataList.last().time, LocalDateTime.now()).toMinutes()
                     val intervalDays = totalIntervalHours / 24
                     val intervalHours = totalIntervalHours % 24
-                    if (intervalDays > 0)
-                        "上次用药\n${intervalDays}天${intervalHours}小时前"
-                    else
+                    if (totalIntervalHours == 0L) {
+                        "上次用药\n${totalIntervalMinutes}分钟前"
+                    } else if (intervalDays == 0L) {
                         "上次用药\n${intervalHours}小时前"
+                    } else {
+                        "上次用药\n${intervalDays}天${intervalHours}小时前"
+                    }
                 }
             }
             delay(5000L)

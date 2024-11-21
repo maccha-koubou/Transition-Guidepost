@@ -1,9 +1,12 @@
 package com.maccha_koubou.transition_guidepost.view.component
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -12,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import com.maccha_koubou.transition_guidepost.ui.theme.DarkPurple
 import com.maccha_koubou.transition_guidepost.ui.theme.Gray
 import com.maccha_koubou.transition_guidepost.ui.theme.LightPurple
 import com.maccha_koubou.transition_guidepost.ui.theme.Typography
@@ -67,6 +71,24 @@ fun SecondaryButton(isFill: Boolean, text: String, event: () -> Unit) {
             text = text,
             style = Typography.labelLarge,
             color = Gray
+        )
+    }
+}
+
+@Composable
+fun InputButton(isFill: Boolean, isAvailable: Boolean, text: String, event: () -> Unit) {
+    Button(
+        onClick = { event() },
+        colors = largeMainButtonColors,
+        modifier = Modifier
+            .height(36.dp)
+            .then(if (isFill) Modifier.fillMaxWidth() else Modifier)
+            .then(if (isAvailable) Modifier.border(1.dp, Gray, RoundedCornerShape(18.dp)) else Modifier)
+    ) {
+        Text(
+            text = text,
+            style = Typography.titleSmall,
+            color = if (isAvailable) DarkPurple else Gray
         )
     }
 }

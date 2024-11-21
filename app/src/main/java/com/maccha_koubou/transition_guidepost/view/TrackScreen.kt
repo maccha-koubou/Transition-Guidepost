@@ -18,7 +18,6 @@ import com.maccha_koubou.transition_guidepost.storage.e2Data
 import com.maccha_koubou.transition_guidepost.storage.tData
 import com.maccha_koubou.transition_guidepost.ui.theme.BackgroundGray
 
-@Preview
 @Composable
 fun TrackScreen() {
     Column(Modifier.fillMaxSize()) {

@@ -12,18 +12,25 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.maccha_koubou.transition_guidepost.storage.user
 import com.maccha_koubou.transition_guidepost.ui.theme.*
+import com.maccha_koubou.transition_guidepost.view.component.EditDateScreen
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 @Preview
 @Composable
 fun DurationBanner() {
+    var showEditDateScreen by remember { mutableStateOf(false) }
+
     Row(
         horizontalArrangement = Arrangement.End,
         verticalAlignment = Alignment.Top
@@ -31,7 +38,7 @@ fun DurationBanner() {
         Column(
             Modifier
                 .padding(0.dp, 8.dp)
-                .clickable { /* GAHT-starting date inputer */ }
+                .clickable { showEditDateScreen = true }
                 .weight(1f)
         ) {
             Text(
@@ -65,6 +72,13 @@ fun DurationBanner() {
             Icon(
                 Icons.Filled.Menu,
                 contentDescription = "更多选项"
+            )
+        }
+
+        // Call the edit data screen
+        if (showEditDateScreen) {
+            EditDateScreen(
+                onDismiss = { showEditDateScreen = false }
             )
         }
     }
