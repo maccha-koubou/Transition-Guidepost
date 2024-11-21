@@ -1,11 +1,14 @@
 package com.maccha_koubou.transition_guidepost.ui.theme
 
+import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.CardColors
+import androidx.compose.material3.DatePickerColors
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.ListItemColors
 import androidx.compose.material3.NavigationBarItemColors
+import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.ui.graphics.Color
 
@@ -30,3 +33,10 @@ val navigationBarColors = NavigationBarItemColors(DarkPurple, DarkPurple, Color.
 val titleBarColors = TopAppBarColors(White, White, Gray, Black, DarkPurple)
 
 val menuItemColors = ListItemColors(White, Black, DarkPurple, Gray, Gray, Gray, Gray, Gray, Gray)
+
+// The colors of the handle and selected text's background in textboxes
+val textSelectionColors = TextSelectionColors(Purple, LightPurple)
+// The colors of the text in textboxes
+val textFieldColors = TextFieldColors(DarkPurple, Black, Gray, Pink, White, LightPurple, White, LightPink, Gray, Gray, textSelectionColors, DarkPurple, Color.Transparent, Gray, Pink, DarkPurple, Gray, Gray, Gray, DarkPurple, Gray, Gray, Gray, DarkPurple, DarkPurple, Gray, Gray, Gray, Gray, Gray, Gray, Gray, Gray, Gray, Pink, Gray, Gray, Gray, Gray, Gray, Gray, Gray, Gray)
+@OptIn(ExperimentalMaterial3Api::class)
+val datePickerColors = DatePickerColors(White, Gray, Black, Black, Black, DarkPurple, Black, Gray, DarkPurple, White, White, DarkPurple, Gray, Black, Gray, White, White, DarkPurple, Gray, DarkPurple, DarkPurple, LightPurple, DarkPurple, LightPurple, textFieldColors)
