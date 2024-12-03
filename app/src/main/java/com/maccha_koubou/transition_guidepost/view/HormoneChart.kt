@@ -35,7 +35,7 @@ fun HormoneChart() {
     LaunchedEffect(Unit) {
         modelProducer.runTransaction { lineSeries {
             series(4, 12, 8, 16)
-            series(x = listOf(1, 2, 3, 40), y = listOf(2, 5, 3, 20))
+            series(x = listOf(1, 2, 3, 40), y = listOf(13, 8, 15, 20))
         } }
     }
     CartesianChartHost(
