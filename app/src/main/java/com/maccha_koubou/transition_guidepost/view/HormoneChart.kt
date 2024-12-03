@@ -34,8 +34,8 @@ fun HormoneChart() {
     val modelProducer = remember { CartesianChartModelProducer() }
     LaunchedEffect(Unit) {
         modelProducer.runTransaction { lineSeries {
-            series(4, 12, 8, 16)
-            series(x = listOf(1, 2, 3, 40), y = listOf(13, 8, 15, 20))
+            series(400, 1200, 800.85, 1600)
+            series(x = listOf(1, 2, 3, 40), y = listOf(1300, 800, 1500, 2000))
         } }
     }
     CartesianChartHost(
@@ -84,7 +84,7 @@ fun HormoneChart() {
             startAxis = VerticalAxis.rememberStart(),
             endAxis = VerticalAxis.rememberEnd(),
             bottomAxis = HorizontalAxis.rememberBottom(),
-            marker = rememberMarker(DefaultCartesianMarker.LabelPosition.AroundPoint)
+            marker = rememberMarker()
         ),
         modelProducer = modelProducer,
         modifier = Modifier.fillMaxSize(),

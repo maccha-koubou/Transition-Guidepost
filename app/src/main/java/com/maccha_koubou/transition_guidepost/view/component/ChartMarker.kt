@@ -5,8 +5,13 @@ import android.text.Layout
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.graphics.ColorUtils
+import androidx.core.graphics.toColor
+import com.maccha_koubou.transition_guidepost.ui.theme.Blue
 import com.maccha_koubou.transition_guidepost.ui.theme.Gray
 import com.maccha_koubou.transition_guidepost.ui.theme.Pink
 import com.maccha_koubou.transition_guidepost.ui.theme.Purple
@@ -47,66 +52,52 @@ import com.patrykandpatrick.vico.core.common.shape.Corner
 import com.patrykandpatrick.vico.core.common.shape.CorneredShape
 import com.patrykandpatrick.vico.core.common.shape.MarkerCorneredShape
 import com.patrykandpatrick.vico.core.common.shape.Shape
+import org.w3c.dom.Text
+import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.min
 
 @Composable
-internal fun rememberMarker(
-    labelPosition: DefaultCartesianMarker.LabelPosition = DefaultCartesianMarker.LabelPosition.Top
-): CartesianMarker {
-    val label =
+internal fun rememberMarker(): CartesianMarker {
+    // The label style of the first data series
+    val labelStyle1 =
         rememberTextComponent(
             color = White,
             textAlignment = Layout.Alignment.ALIGN_CENTER,
-            //padding = dimensions(8.dp, 4.dp),
+            padding = dimensions(8.dp, 2.dp),
             background = rememberShapeComponent(
                 fill = fill(Pink),
                 shape = CorneredShape(Corner.FullyRounded, Corner.FullyRounded, Corner.FullyRounded, Corner.FullyRounded)
             ),
             minWidth = TextComponent.MinWidth.fixed(40.dp),
         )
-    val indicatorFrontComponent =
-        rememberShapeComponent(fill(Purple), CorneredShape.Pill)
-    val indicatorCenterComponent = rememberShapeComponent(shape = CorneredShape.Pill)
-    val indicatorRearComponent = rememberShapeComponent(shape = CorneredShape.Pill)
-    val indicator =
-        rememberLayeredComponent(
-            rear = indicatorRearComponent,
-            front =
-            rememberLayeredComponent(
-                rear = indicatorCenterComponent,
-                front = indicatorFrontComponent,
-                padding = dimensions(5.dp),
+    // The label style of the second data series
+    val labelStyle2 =
+        rememberTextComponent(
+            color = White,
+            textAlignment = Layout.Alignment.ALIGN_CENTER,
+            padding = dimensions(8.dp, 2.dp),
+            background = rememberShapeComponent(
+                fill = fill(Blue),
+                shape = CorneredShape(Corner.FullyRounded, Corner.FullyRounded, Corner.FullyRounded, Corner.FullyRounded)
             ),
-            padding = dimensions(10.dp),
+            minWidth = TextComponent.MinWidth.fixed(40.dp),
         )
+
     val guideline = rememberAxisGuidelineComponent(
         thickness = 3.dp,
         fill = fill(Gray),
         shape = dashedShape(Shape.Rectangle, 2.dp, 2.dp),
     )
-    return remember(label, labelPosition, indicator, guideline) {
+
+    return remember(labelStyle1, labelStyle2, guideline) {
         object :
             ChartMarker(
-                label = label,
-                labelPosition = DefaultCartesianMarker.LabelPosition.AroundPoint,
+                labelStyle1 = labelStyle1,
+                labelStyle2 = labelStyle2,
+                labelPosition = LabelPosition.AroundPoint,
                 guideline = guideline,
-            ) {
-            /*override fun updateInsets(
-                context: CartesianMeasuringContext,
-                horizontalDimensions: HorizontalDimensions,
-                model: CartesianChartModel,
-                insets: Insets,
-            ) {
-                with(context) {
-                    val baseShadowInsetDp =
-                        CLIPPING_FREE_SHADOW_RADIUS_MULTIPLIER * LABEL_BACKGROUND_SHADOW_RADIUS_DP
-                    var topInset = (6f - 2f).pixels + label.getHeight(context) + tickSizeDp.pixels
-                    var bottomInset = (6f + LABEL_BACKGROUND_SHADOW_DY_DP).pixels
-                    insets.ensureValuesAtLeast(top = 16f.pixels, bottom = 58f.pixels)
-                }
-            }*/
-        }
+            ) {}
     }
 }
 
@@ -116,109 +107,82 @@ private const val CLIPPING_FREE_SHADOW_RADIUS_MULTIPLIER = 1.4f
 
 
 open class ChartMarker(
-    label: TextComponent,
+    val labelStyle1: TextComponent,
+    val labelStyle2: TextComponent,
     valueFormatter: CartesianMarkerValueFormatter = DefaultCartesianMarkerValueFormatter(),
     labelPosition: LabelPosition = LabelPosition.Top,
     indicator: ((Int) -> Component)? = null,
     @SuppressLint("RestrictedApi") indicatorSizeDp: Float = Defaults.MARKER_INDICATOR_SIZE,
     guideline: LineComponent? = null,
-) : DefaultCartesianMarker(label, valueFormatter, labelPosition, indicator, indicatorSizeDp, guideline) {
+) : DefaultCartesianMarker(labelStyle1, valueFormatter, labelPosition, indicator, indicatorSizeDp, guideline) {
 
-    @SuppressLint("RestrictedApi")
+
+
     override fun drawOverLayers(
         context: CartesianDrawingContext,
         targets: List<CartesianMarker.Target>,
     ) {
         with(context) {
             drawGuideline(targets)
-            val halfIndicatorSize = indicatorSizeDp.half.pixels
-
-            targets.forEach { target -> drawCustomizedLabel(context, target) }
+            targets.forEach { target -> drawCustomizedLabel(context, target, labelStyle1, labelStyle2) }
         }
     }
 
-    @SuppressLint("RestrictedApi")
     fun drawCustomizedLabel(
         context: CartesianDrawingContext,
         target: CartesianMarker.Target,
-    ): Unit =
+        labelStyle1: TextComponent,
+        labelStyle2: TextComponent
+    ) {
         when (target) {
             is LineCartesianLayerMarkerTarget -> {
-                target.points.forEach { point ->
-                    label.draw(
+                val minLabelDistance = label.getBounds(context, "").height()
+                target.points.forEachIndexed { index, point ->
+
+                    val thisLabel: TextComponent
+                    // Use the point's color as the label's color
+                    when (Fill(point.color)) {
+                        (labelStyle1.background as ShapeComponent).fill ->
+                            thisLabel = labelStyle1
+                        else ->
+                            thisLabel = labelStyle2
+                    }
+
+                    thisLabel.draw(
                         context = context,
                         text = point.entry.y.toString(),
                         x = target.canvasX,
-                        y = point.canvasY,
-                        /*verticalPosition = verticalPosition,
-                        maxWidth = ceil(min(layerBounds.right - x, x - layerBounds.left).doubled).toInt(),
-                    */)
+                        // Avoid labels overlap or become too close
+                        y = if (target.points.size == 2) {
+                            // If there are two labels and they are overlap
+                            if (target.points[0].canvasY == target.points[1].canvasY) {
+                                when (index) {
+                                    // Move up the first label and move down the other
+                                    0 -> point.canvasY + minLabelDistance / 2
+                                    else -> point.canvasY - minLabelDistance / 2
+                                }
+                                // If there are two labels and they are too close
+                            } else if (abs(target.points[0].canvasY - target.points[1].canvasY) < minLabelDistance) {
+                                val labelOffset =
+                                    (minLabelDistance - abs(target.points[0].canvasY - target.points[1].canvasY)) / 2
+                                when {
+                                    // Move up the Upper label and move down the lower one
+                                    point.canvasY >= target.points[0].canvasY && point.canvasY >= target.points[1].canvasY ->
+                                        point.canvasY + labelOffset
+
+                                    else -> point.canvasY - labelOffset
+                                }
+                            } else {
+                                point.canvasY
+                            }
+                        } else {
+                            point.canvasY
+                        }
+                    )
                 }
             }
+
             else -> {}
         }
-
-
-        /*with(context) {
-            val text = targets[0].x.toString()
-            val targetX = targets[0].canvasX
-            val labelBounds =
-                label.getBounds(
-                    context = context,
-                    text = text,
-                    maxWidth = layerBounds.width().toInt(),
-                    outRect = tempBounds,
-                )
-            val halfOfTextWidth = labelBounds.width().half
-            val x = overrideXPositionToFit(targetX, layerBounds, halfOfTextWidth)
-            markerCorneredShape?.tickX = targetX
-            val tickPosition: MarkerCorneredShape.TickPosition
-            val y: Float = context.layerBounds.top - tickSizeDp.pixels
-            val verticalPosition: VerticalPosition
-            when (labelPosition) {
-                LabelPosition.Top -> {
-                    tickPosition = MarkerCorneredShape.TickPosition.Bottom
-                    //y = context.layerBounds.top - tickSizeDp.pixels
-                    verticalPosition = VerticalPosition.Top
-                }
-                LabelPosition.Bottom -> {
-                    tickPosition = MarkerCorneredShape.TickPosition.Top
-                    //y = context.layerBounds.bottom + tickSizeDp.pixels
-                    verticalPosition = VerticalPosition.Bottom
-                }
-                LabelPosition.AroundPoint,
-                LabelPosition.AbovePoint -> {
-                    val topPointY =
-                        targets.minOf { target ->
-                            when (target) {
-                                is CandlestickCartesianLayerMarkerTarget -> target.highCanvasY
-                                is ColumnCartesianLayerMarkerTarget ->
-                                    target.columns.minOf(ColumnCartesianLayerMarkerTarget.Column::canvasY)
-                                is LineCartesianLayerMarkerTarget ->
-                                    target.points.minOf(LineCartesianLayerMarkerTarget.Point::canvasY)
-                                else -> error("Unexpected `CartesianMarker.Target` implementation.")
-                            }
-                        }
-                    val flip =
-                        labelPosition == LabelPosition.AroundPoint &&
-                                topPointY - labelBounds.height() - tickSizeDp.pixels < context.layerBounds.top
-                    tickPosition =
-                        if (flip) MarkerCorneredShape.TickPosition.Top
-                        else MarkerCorneredShape.TickPosition.Bottom
-                    //y = topPointY + (if (flip) 1 else -1) * tickSizeDp.pixels
-                    verticalPosition = if (flip) VerticalPosition.Bottom else VerticalPosition.Top
-                }
-            }
-            markerCorneredShape?.tickPosition = tickPosition
-
-            label.draw(
-                context = context,
-                text = text,
-                x = x,
-                y = y,
-                verticalPosition = verticalPosition,
-                maxWidth = ceil(min(layerBounds.right - x, x - layerBounds.left)).toInt(),
-            )
-        }*/
-
+    }
 }
