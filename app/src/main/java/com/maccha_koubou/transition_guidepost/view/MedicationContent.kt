@@ -167,8 +167,6 @@ fun MedicationContent() {
             }
 
             when (isMedicationList) {
-
-                // List
                 true ->
                     Column(
                         Modifier
@@ -180,7 +178,6 @@ fun MedicationContent() {
                             }
                         }
                     }
-
                 false ->
                     Box(
                         Modifier

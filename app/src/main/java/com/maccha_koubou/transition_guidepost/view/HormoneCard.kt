@@ -22,18 +22,24 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Shapes
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.maccha_koubou.transition_guidepost.storage.e2Data
 import com.maccha_koubou.transition_guidepost.storage.tData
 import com.maccha_koubou.transition_guidepost.ui.theme.AddButtonColors
+import com.maccha_koubou.transition_guidepost.ui.theme.Blue
 import com.maccha_koubou.transition_guidepost.ui.theme.IconButtonColors
 import com.maccha_koubou.transition_guidepost.ui.theme.LightPurple
+import com.maccha_koubou.transition_guidepost.ui.theme.Pink
 import com.maccha_koubou.transition_guidepost.ui.theme.Purple
 import com.maccha_koubou.transition_guidepost.ui.theme.Typography
 import com.maccha_koubou.transition_guidepost.ui.theme.White
@@ -42,6 +48,25 @@ import com.maccha_koubou.transition_guidepost.ui.theme.largeMainButtonColors
 import com.maccha_koubou.transition_guidepost.view.component.AddDataIconButton
 import com.maccha_koubou.transition_guidepost.view.component.ChartListSwitcher
 import com.maccha_koubou.transition_guidepost.view.component.MainButton
+import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
+import com.patrykandpatrick.vico.compose.cartesian.axis.rememberBottom
+import com.patrykandpatrick.vico.compose.cartesian.axis.rememberEnd
+import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLineCartesianLayer
+import com.patrykandpatrick.vico.compose.cartesian.rememberCartesianChart
+import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
+import com.patrykandpatrick.vico.core.cartesian.data.lineSeries
+import com.patrykandpatrick.vico.compose.cartesian.axis.rememberStart
+import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLine
+import com.patrykandpatrick.vico.compose.common.fill
+import com.patrykandpatrick.vico.core.cartesian.axis.HorizontalAxis
+import com.patrykandpatrick.vico.core.cartesian.axis.VerticalAxis
+import com.patrykandpatrick.vico.core.cartesian.layer.LineCartesianLayer
+import com.patrykandpatrick.vico.core.common.component.ShapeComponent
+import com.patrykandpatrick.vico.core.common.component.TextComponent
+import com.patrykandpatrick.vico.core.common.shape.Corner
+import com.patrykandpatrick.vico.core.common.shape.CorneredShape
+import com.patrykandpatrick.vico.core.common.shape.CutCornerTreatment
+import com.patrykandpatrick.vico.core.common.shape.Shape
 
 
 const val hormoneCardTitle = "我的激素水平"
@@ -55,7 +80,7 @@ fun HormoneCard() {
         colors = cardColors
     ) {
         when (e2Data.dataList.isEmpty() && tData.dataList.isEmpty()) {
-            true -> EmptyHormoneContent()
+            true -> /*Empty*/HormoneContent()
             else -> HormoneContent()
         }
     }
@@ -156,6 +181,7 @@ fun HormoneContent() {
                     .padding(16.dp, 0.dp, 16.dp ,12.dp)
                     .border(1.dp, LightPurple) // Only for testing
             ) {
+                HormoneChart()
             }
         }
     }
