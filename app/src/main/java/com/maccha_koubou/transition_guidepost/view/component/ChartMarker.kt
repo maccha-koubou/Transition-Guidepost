@@ -2,6 +2,7 @@ package com.maccha_koubou.transition_guidepost.view.component
 
 import android.annotation.SuppressLint
 import android.text.Layout
+import android.util.DisplayMetrics
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -53,6 +54,8 @@ import com.patrykandpatrick.vico.core.common.shape.CorneredShape
 import com.patrykandpatrick.vico.core.common.shape.MarkerCorneredShape
 import com.patrykandpatrick.vico.core.common.shape.Shape
 import org.w3c.dom.Text
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.min
@@ -83,6 +86,18 @@ internal fun rememberMarker(): CartesianMarker {
             ),
             minWidth = TextComponent.MinWidth.fixed(40.dp),
         )
+    // The label style of the date label
+    val labelStyleDate =
+        rememberTextComponent(
+            color = White,
+            textAlignment = Layout.Alignment.ALIGN_CENTER,
+            padding = dimensions(8.dp, 2.dp),
+            background = rememberShapeComponent(
+                fill = fill(Gray),
+                shape = CorneredShape(Corner.FullyRounded, Corner.FullyRounded, Corner.FullyRounded, Corner.FullyRounded)
+            ),
+            minWidth = TextComponent.MinWidth.fixed(40.dp),
+        )
 
     val guideline = rememberAxisGuidelineComponent(
         thickness = 3.dp,
@@ -95,6 +110,7 @@ internal fun rememberMarker(): CartesianMarker {
             ChartMarker(
                 labelStyle1 = labelStyle1,
                 labelStyle2 = labelStyle2,
+                labelStyleDate = labelStyleDate,
                 labelPosition = LabelPosition.AroundPoint,
                 guideline = guideline,
             ) {}
@@ -109,6 +125,7 @@ private const val CLIPPING_FREE_SHADOW_RADIUS_MULTIPLIER = 1.4f
 open class ChartMarker(
     val labelStyle1: TextComponent,
     val labelStyle2: TextComponent,
+    val labelStyleDate: TextComponent,
     valueFormatter: CartesianMarkerValueFormatter = DefaultCartesianMarkerValueFormatter(),
     labelPosition: LabelPosition = LabelPosition.Top,
     indicator: ((Int) -> Component)? = null,
@@ -124,20 +141,32 @@ open class ChartMarker(
     ) {
         with(context) {
             drawGuideline(targets)
-            targets.forEach { target -> drawCustomizedLabel(context, target, labelStyle1, labelStyle2) }
+            targets.forEach { target -> drawCustomizedLabel(context, target, labelStyle1, labelStyle2, labelStyleDate) }
         }
     }
 
+    @SuppressLint("DefaultLocale")
     fun drawCustomizedLabel(
         context: CartesianDrawingContext,
         target: CartesianMarker.Target,
         labelStyle1: TextComponent,
-        labelStyle2: TextComponent
+        labelStyle2: TextComponent,
+        labelStyleDate: TextComponent
     ) {
         when (target) {
             is LineCartesianLayerMarkerTarget -> {
                 val minLabelDistance = label.getBounds(context, "").height()
                 target.points.forEachIndexed { index, point ->
+
+                    val date = LocalDate.ofEpochDay(point.entry.x.toLong())
+                    val formatter = DateTimeFormatter.ofPattern("yyyy年M月d日")
+
+                    labelStyleDate.draw(
+                        context = context,
+                        text = date.format(formatter),
+                        x = target.canvasX,
+                        y = context.layerBounds.bottom + minLabelDistance - context.dpToPx(5f)
+                    )
 
                     val thisLabel: TextComponent
                     // Use the point's color as the label's color
@@ -150,7 +179,7 @@ open class ChartMarker(
 
                     thisLabel.draw(
                         context = context,
-                        text = point.entry.y.toString(),
+                        text = String.format("%.2f", point.entry.y),
                         x = target.canvasX,
                         // Avoid labels overlap or become too close
                         y = if (target.points.size == 2) {

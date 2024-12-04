@@ -43,7 +43,7 @@ fun DurationBanner() {
         ) {
             Text(
                 text = LocalDate.now().format(
-                    DateTimeFormatter.ofPattern("yyyy年MM月dd日")
+                    DateTimeFormatter.ofPattern("yyyy年M月d日")
                 ),
                 style = Typography.bodySmall
             )

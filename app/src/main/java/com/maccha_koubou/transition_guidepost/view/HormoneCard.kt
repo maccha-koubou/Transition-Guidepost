@@ -179,7 +179,6 @@ fun HormoneContent() {
                 Modifier
                     .fillMaxSize()
                     .padding(16.dp, 0.dp, 16.dp ,12.dp)
-                    .border(1.dp, LightPurple) // Only for testing
             ) {
                 HormoneChart()
             }
