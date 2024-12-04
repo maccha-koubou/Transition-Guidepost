@@ -6,14 +6,14 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import java.time.LocalDateTime
 
 // Classes of record series
-interface RecordedData<T: DataRecord>{
+interface RecordedData<out T: DataRecord>{
     val name: String
     var color: Color
     var icon: ImageVector
     var isDataActive: Boolean
     var isAlarmActive: Boolean
     var alarmCycle: AlarmCycle?
-    var dataList: MutableList<T>
+    var dataList: MutableList<@UnsafeVariance T>
 }
 
 interface BodyData

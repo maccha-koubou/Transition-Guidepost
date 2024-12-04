@@ -7,6 +7,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.maccha_koubou.transition_guidepost.storage.chartDateSetting
 import com.maccha_koubou.transition_guidepost.storage.e2Data
 import com.maccha_koubou.transition_guidepost.storage.tData
 import com.maccha_koubou.transition_guidepost.ui.theme.Blue
@@ -145,9 +146,30 @@ fun HormoneChart() {
         ),
         zoomState = rememberVicoZoomState(
             zoomEnabled = true,
-            initialZoom = remember { Zoom.static(10f) },
-            minZoom = remember { Zoom.static(10f) },
-            maxZoom = remember { Zoom.static(10f) }
+            initialZoom = remember { Zoom { context, horizontalDimensions, bounds ->
+                val totalContentWidth = horizontalDimensions.getScalableContentWidth(context)
+                if (totalContentWidth == 0f || chartDateSetting.displayedDurationProportion == null) {
+                    1f
+                } else {
+                    (bounds.width() - horizontalDimensions.unscalablePadding) / (totalContentWidth * chartDateSetting.displayedDurationProportion)
+                }
+            }},
+            minZoom = remember { Zoom { context, horizontalDimensions, bounds ->
+                val totalContentWidth = horizontalDimensions.getScalableContentWidth(context)
+                if (totalContentWidth == 0f || chartDateSetting.displayedDurationProportion == null) {
+                    1f
+                } else {
+                    (bounds.width() - horizontalDimensions.unscalablePadding) / (totalContentWidth * chartDateSetting.displayedDurationProportion)
+                }
+            }},
+            maxZoom = remember { Zoom { context, horizontalDimensions, bounds ->
+                val totalContentWidth = horizontalDimensions.getScalableContentWidth(context)
+                if (totalContentWidth == 0f || chartDateSetting.displayedDurationProportion == null) {
+                    1f
+                } else {
+                    (bounds.width() - horizontalDimensions.unscalablePadding) / (totalContentWidth * chartDateSetting.displayedDurationProportion)
+                }
+            }}
         )
     )
 }
