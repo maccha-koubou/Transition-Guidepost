@@ -49,7 +49,7 @@ fun MedicationCheckBoxAndDescription(item: MedicationData) {
     var showRegretRecordMenu by remember { mutableStateOf(false) }
     var checkBoxDescription by remember { mutableStateOf("点击选框\n打卡用药") }
 
-    // Update the checkbox and its description text every 5s
+    // Update the checkbox and its description text every 0.3s
     LaunchedEffect(item.dataList.lastOrNull()) {
         while (true) {
             isChecked =
@@ -73,7 +73,7 @@ fun MedicationCheckBoxAndDescription(item: MedicationData) {
                     }
                 }
             }
-            delay(5000L)
+            delay(300L)
         }
     }
 

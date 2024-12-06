@@ -1,5 +1,7 @@
 package com.maccha_koubou.transition_guidepost.view
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -70,14 +72,29 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
+@RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
 @Composable
 fun HormoneChart() {
     val modelProducer = remember { CartesianChartModelProducer() }
+    val timeRange = mutableListOf(chartDateSetting.earliestDateTotal!!, chartDateSetting.endDate!!)
+    val timeRangeAssistance = mutableListOf(0,0) // Only used for scroll the chart to the latest day
 
-    // Update the data series on the chart every 5s
+    // Update the data series on the chart every 0.3s
     LaunchedEffect(Unit) {
         while (true) {
+            // Add and remove an item in these 2 lists
+            // to force the chart scroll to the latest day
+            timeRange.add(chartDateSetting.endDate!!)
+            timeRangeAssistance.add(0)
+
             modelProducer.runTransaction {
+                // The first series used to keep the chart
+                // including the earliest and latest date of all data
+                lineSeries {
+                    series(
+                        x = timeRange,
+                        y = timeRangeAssistance)
+                }
                 lineSeries {
                     series(
                         x = chartDateSetting.hormoneChartFirstData().dataList.map {
@@ -93,7 +110,9 @@ fun HormoneChart() {
                         y = chartDateSetting.hormoneChartSecondData().dataList.map { it.data })
                 }
             }
-            delay(5000L)
+            timeRange.removeLast()
+            timeRangeAssistance.removeLast()
+            delay(300L)
         }
     }
 
@@ -108,7 +127,21 @@ fun HormoneChart() {
         }
     }}
 
-    // The data name and unit label
+    // Common look of the axes
+    val axisLine = rememberAxisLineComponent(fill(Color.Transparent))
+    val axisGuideline = rememberAxisGuidelineComponent(
+        fill = fill(LightPurple),
+        thickness = 1.dp,
+        shape = dashedShape(Shape.Rectangle, 10.dp, 0.dp)
+    )
+
+    // Colors
+    val firstColor = chartDateSetting.hormoneChartFirstData().color
+    val secondColor = chartDateSetting.hormoneChartSecondData().color
+
+
+
+        // The data name and unit label
     Column(Modifier.fillMaxSize()) {
         Row(
             modifier = Modifier
@@ -120,13 +153,13 @@ fun HormoneChart() {
                     text = chartDateSetting.hormoneChartFirstData().name,
                     textAlign = TextAlign.Left,
                     style = Typography.labelMedium,
-                    color = chartDateSetting.hormoneChartFirstData().color
+                    color = firstColor
                 )
                 Text(
                     text = chartDateSetting.hormoneChartFirstData().displayedUnit,
                     textAlign = TextAlign.Left,
                     style = Typography.labelSmall,
-                    color = chartDateSetting.hormoneChartFirstData().color
+                    color = firstColor
                 )
             }
             Row(Modifier.weight(1f)) {}
@@ -135,13 +168,13 @@ fun HormoneChart() {
                     text = chartDateSetting.hormoneChartSecondData().name,
                     textAlign = TextAlign.Right,
                     style = Typography.labelMedium,
-                    color = chartDateSetting.hormoneChartSecondData().color
+                    color = secondColor
                 )
                 Text(
                     text = chartDateSetting.hormoneChartSecondData().displayedUnit,
                     textAlign = TextAlign.Right,
                     style = Typography.labelSmall,
-                    color = chartDateSetting.hormoneChartSecondData().color
+                    color = secondColor
                 )
             }
         }
@@ -149,10 +182,22 @@ fun HormoneChart() {
         // The chart itself
         CartesianChartHost(
             chart = rememberCartesianChart(
+
+                // Nothing is shown in this layer
                 rememberLineCartesianLayer(
                     LineCartesianLayer.LineProvider.series(
                         LineCartesianLayer.rememberLine(
-                            fill = remember { LineCartesianLayer.LineFill.single(fill(chartDateSetting.hormoneChartFirstData().color)) },
+                            fill = remember { LineCartesianLayer.LineFill.single(fill(Color.Transparent)) },
+                            areaFill = null,
+                            thickness = 0.dp
+                        )
+                    )
+                ),
+
+                rememberLineCartesianLayer(
+                    LineCartesianLayer.LineProvider.series(
+                        LineCartesianLayer.rememberLine(
+                            fill = remember { LineCartesianLayer.LineFill.single(fill(firstColor)) },
                             areaFill = null,
                             thickness = 2.dp,
                             pointProvider = remember {
@@ -167,7 +212,7 @@ fun HormoneChart() {
                                                 Corner.FullyRounded,
                                                 Corner.FullyRounded
                                             ),
-                                            strokeFill = fill(chartDateSetting.hormoneChartFirstData().color),
+                                            strokeFill = fill(firstColor),
                                             strokeThicknessDp = 1.5f
                                         ),
                                         sizeDp = 10f
@@ -184,7 +229,7 @@ fun HormoneChart() {
                 rememberLineCartesianLayer(
                     LineCartesianLayer.LineProvider.series(
                         LineCartesianLayer.rememberLine(
-                            fill = remember { LineCartesianLayer.LineFill.single(fill(chartDateSetting.hormoneChartSecondData().color)) },
+                            fill = remember { LineCartesianLayer.LineFill.single(fill(secondColor)) },
                             areaFill = null,
                             thickness = 2.dp,
                             pointProvider = remember {
@@ -193,7 +238,7 @@ fun HormoneChart() {
                                     LineCartesianLayer.Point(
                                         ShapeComponent(
                                             fill = fill(White),
-                                            strokeFill = fill(chartDateSetting.hormoneChartSecondData().color),
+                                            strokeFill = fill(secondColor),
                                             strokeThicknessDp = 1.5f
                                         ),
                                         sizeDp = 10f
@@ -207,26 +252,18 @@ fun HormoneChart() {
                     verticalAxisPosition = Axis.Position.Vertical.End,
                 ),
                 startAxis = VerticalAxis.rememberStart(
-                    line = rememberAxisLineComponent(fill(Color.Transparent)),
-                    label = rememberAxisLabelComponent(chartDateSetting.hormoneChartFirstData().color),
-                    tick = rememberAxisTickComponent(fill(Color.Transparent)),
+                    line = axisLine,
+                    label = rememberAxisLabelComponent(firstColor),
+                    tick = axisLine,
                     tickLength = 0.dp,
-                    guideline = rememberAxisGuidelineComponent(
-                        fill = fill(LightPurple),
-                        thickness = 1.dp,
-                        shape = dashedShape(Shape.Rectangle, 10.dp, 0.dp)
-                    )
+                    guideline = axisGuideline
                 ),
                 endAxis = VerticalAxis.rememberEnd(
-                    line = rememberAxisLineComponent(fill(Color.Transparent)),
-                    label = rememberAxisLabelComponent(chartDateSetting.hormoneChartSecondData().color),
-                    tick = rememberAxisTickComponent(fill(Color.Transparent)),
+                    line = axisLine,
+                    label = rememberAxisLabelComponent(secondColor),
+                    tick = axisLine,
                     tickLength = 0.dp,
-                    guideline = rememberAxisGuidelineComponent(
-                        fill = fill(LightPurple),
-                        thickness = 1.dp,
-                        shape = dashedShape(Shape.Rectangle, 10.dp, 0.dp)
-                    )
+                    guideline = axisGuideline
                 ),
                 bottomAxis = HorizontalAxis.rememberBottom(
                     line = rememberAxisLineComponent(fill(LightPurple), 1.dp),
@@ -240,63 +277,20 @@ fun HormoneChart() {
                     guideline = rememberAxisGuidelineComponent(fill(Color.Transparent))
                 ),
                 // The recommendation range box of the first data series
-                decorations = if (chartDateSetting.hormoneChartFirstData() is TestData) {
-                    // Only show recommendation range box when the data is TestData
-                    listOfNotNull(
-                        if ((
-                            // If the recommendation range is already set
-                            chartDateSetting.hormoneChartFirstData() as TestData)
-                                .recommendationValue != null
-                            &&
-                            // And the recommendation range can be shown in this chart
-                            (chartDateSetting.hormoneChartFirstData() as TestData)
-                                .recommendationValue!!.start <
-                                    chartDateSetting.hormoneChartFirstData()
-                                        .dataList.maxOf { it.data }) {
-                            HorizontalBox(
-                                y = {(
-                                        // The range box's bottom edge is set as the lower edge of the recommendation range
-                                        (
-                                                chartDateSetting.hormoneChartFirstData() as TestData)
-                                                    .recommendationValue!!.start.toDouble()
-                                        )..(
-                                                if ((chartDateSetting.hormoneChartFirstData() as TestData)
-                                                        .recommendationValue!!.endInclusive <
-                                                    chartDateSetting.hormoneChartFirstData()
-                                                        .dataList.maxOf { it.data }) {
-                                                    (chartDateSetting.hormoneChartFirstData() as TestData)
-                                                        .recommendationValue!!.endInclusive.toDouble()
-                                                } else {
-                                                    chartDateSetting.hormoneChartFirstData()
-                                                        .dataList.maxOf { it.data }.toDouble()
-                                                }
-                                        )
-                                },
-                                // The transparent color of the recommendation range box
-                                box = ShapeComponent(
-                                    fill(
-                                        chartDateSetting.hormoneChartFirstData().color.copy(
-                                            0.1f
-                                        )
-                                    )
-                                )
-                            )
-                        } else { null },
-                        // The recommendation range box of the second data series
-                        HorizontalBox(
-                            // The range of the recommendation value of this data series
-                            y = { 7.0..14.0 },
-                            // The transparent color of the recommendation range box
-                            box = ShapeComponent(
-                                fill(
-                                    chartDateSetting.hormoneChartSecondData().color.copy(
-                                        0.1f
-                                    )
-                                )
-                            )
-                        )
+                decorations = listOfNotNull(
+                    recommendationRangeBoxOrNull(
+                        (chartDateSetting.hormoneChartFirstData() as TestData).recommendationValue,
+                        chartDateSetting.hormoneChartFirstData().dataList.maxOf { it.data },
+                        firstColor,
+                        Axis.Position.Vertical.Start
+                    ),
+                    recommendationRangeBoxOrNull(
+                        (chartDateSetting.hormoneChartSecondData() as TestData).recommendationValue,
+                        chartDateSetting.hormoneChartSecondData().dataList.maxOf { it.data },
+                        secondColor,
+                        Axis.Position.Vertical.End
                     )
-                } else { emptyList() },
+                ),
                 marker = rememberMarker()
             ),
             modelProducer = modelProducer,
@@ -316,5 +310,46 @@ fun HormoneChart() {
                 maxZoom = zoomState
             )
         )
+    }
+}
+
+/**
+ * This function can determine whether the recommendation range box
+ * can be accommodated by the chart,
+ * and only display the containable part of the recommendation range box
+ *
+ * If the recommendation data has not be set already, this function returns a null
+ */
+private fun recommendationRangeBoxOrNull(
+    recommendationRange: ClosedFloatingPointRange<Float>?,
+    largestDataInTheChart: Float?,
+    color: Color,
+    axis: Axis.Position.Vertical
+): HorizontalBox? {
+    // Only call the recommendation range box when the recommendation range is already set
+    if (recommendationRange != null && largestDataInTheChart != null) {
+        val recommendationLowerRange = recommendationRange.start
+        val recommendationHigherRange = recommendationRange.endInclusive
+
+        // If the recommendation range's lower edge can be shown in this chart
+        if (recommendationLowerRange < largestDataInTheChart) {
+            return HorizontalBox(
+                y = {
+                    // The lower edge of the range box is set as the lower edge of the recommendation range
+                    (recommendationLowerRange.toDouble())..(
+                            // Only use the recommendation range's higher edge
+                            // when it can be shown inside this chart
+                            minOf(recommendationHigherRange, largestDataInTheChart).toDouble()
+                            )
+                },
+                // The transparent color of the recommendation range box
+                box = ShapeComponent(fill(color.copy(0.1f))),
+                verticalAxisPosition = axis
+            )
+        } else {
+            return null
+        }
+    } else {
+        return null
     }
 }

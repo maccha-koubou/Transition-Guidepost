@@ -116,81 +116,76 @@ open class ChartMarker(
     ) {
         with(context) {
             drawGuideline(targets)
-            targets.forEach { target -> drawCustomizedLabel(context, target, labelStyle1, labelStyle2, labelStyleDate) }
+            drawCustomizedLabel(context, targets, labelStyle1, labelStyle2, labelStyleDate)
         }
     }
 
     @SuppressLint("DefaultLocale")
     fun drawCustomizedLabel(
         context: CartesianDrawingContext,
-        target: CartesianMarker.Target,
+        targets: List<CartesianMarker.Target>,
         labelStyle1: TextComponent,
         labelStyle2: TextComponent,
         labelStyleDate: TextComponent
     ) {
-        when (target) {
-            is LineCartesianLayerMarkerTarget -> {
-                val minLabelDistance = label.getBounds(context, "").height()
-                target.points.forEachIndexed { index, point ->
+        targets as List<LineCartesianLayerMarkerTarget>
+        val targetSize = targets.size
+        targets.forEachIndexed { index, target ->
+            val minLabelDistance = label.getBounds(context, "").height()
+            target.points.forEachIndexed { index, point ->
 
-                    val date = LocalDate.ofEpochDay(point.entry.x.toLong())
-                    val formatter = DateTimeFormatter.ofPattern("yyyy年M月d日")
+                val date = LocalDate.ofEpochDay(point.entry.x.toLong())
+                val formatter = DateTimeFormatter.ofPattern("yyyy年M月d日")
 
-                    labelStyleDate.draw(
-                        context = context,
-                        text = date.format(formatter),
-                        x = target.canvasX,
-                        y = context.layerBounds.bottom + minLabelDistance - context.dpToPx(5f)
-                    )
+                labelStyleDate.draw(
+                    context = context,
+                    text = date.format(formatter),
+                    x = target.canvasX,
+                    y = context.layerBounds.bottom + minLabelDistance - context.dpToPx(5f)
+                )
 
-                    val thisLabel: TextComponent
-                    // Use the point's color as the label's color
-                    when (Fill(point.color)) {
-                        (labelStyle1.background as ShapeComponent).fill ->
-                            thisLabel = labelStyle1
-                        else ->
-                            thisLabel = labelStyle2
-                    }
+                val thisLabel: TextComponent
+                // Use the point's color as the label's color
+                when (Fill(point.color)) {
+                    (labelStyle1.background as ShapeComponent).fill ->
+                        thisLabel = labelStyle1
 
-                    thisLabel.draw(
-                        context = context,
-                        text = String.format("%.2f", point.entry.y),
-                        x = target.canvasX,
-                        // Avoid labels overlap or become too close
-                        y = if (target.points.size == 2) {
-                            // If there are two labels and they are overlap
-                            if (target.points[0].canvasY == target.points[1].canvasY) {
-                                when (index) {
-                                    // Move up the first label and move down the other
-                                    0 -> point.canvasY + minLabelDistance / 2
-                                    else -> point.canvasY - minLabelDistance / 2
-                                }
-                                // If there are two labels and they are too close
-                            } else if (abs(target.points[0].canvasY - target.points[1].canvasY) < minLabelDistance) {
-                                val labelOffset =
-                                    (minLabelDistance - abs(target.points[0].canvasY - target.points[1].canvasY)) / 2
-                                when {
-                                    // Move up the Upper label and move down the lower one
-                                    point.canvasY >= target.points[0].canvasY && point.canvasY >= target.points[1].canvasY ->
-                                        point.canvasY + labelOffset
+                    else ->
+                        thisLabel = labelStyle2
+                }
 
-                                    else -> point.canvasY - labelOffset
-                                }
-                            } else {
-                                point.canvasY
+                thisLabel.draw(
+                    context = context,
+                    text = String.format("%.2f", point.entry.y),
+                    x = target.canvasX,
+                    // Avoid labels overlap or become too close
+                    y = if (target.points.size == 2) {
+                        // If there are two labels and they are overlap
+                        if (target.points[0].canvasY == target.points[1].canvasY) {
+                            when (index) {
+                                // Move up the first label and move down the other
+                                0 -> point.canvasY + minLabelDistance / 2
+                                else -> point.canvasY - minLabelDistance / 2
+                            }
+                            // If there are two labels and they are too close
+                        } else if (abs(target.points[0].canvasY - target.points[1].canvasY) < minLabelDistance) {
+                            val labelOffset =
+                                (minLabelDistance - abs(target.points[0].canvasY - target.points[1].canvasY)) / 2
+                            when {
+                                // Move up the Upper label and move down the lower one
+                                point.canvasY >= target.points[0].canvasY && point.canvasY >= target.points[1].canvasY ->
+                                    point.canvasY + labelOffset
+
+                                else -> point.canvasY - labelOffset
                             }
                         } else {
                             point.canvasY
                         }
-                    )
-                }
+                    } else {
+                        point.canvasY
+                    }
+                )
             }
-
-            else -> {}
         }
     }
 }
-
-
-
-// Customized decorations
