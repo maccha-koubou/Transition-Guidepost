@@ -22,9 +22,9 @@ fun addTestData() {
     e2Data.dataList.apply {
         add(TestRecord(92.98f, LocalDateTime.of(2023, 3, 15, 0, 0, 0)))
         add(TestRecord(106.24f, LocalDateTime.of(2024, 3, 27, 0, 0, 0)))
-        add(TestRecord(126.54f, LocalDateTime.of(2024, 5, 7, 0, 0, 0)))
-        add(TestRecord(206.18f, LocalDateTime.of(2024, 5, 22, 0, 0, 0)))
-        add(TestRecord(306.02f, LocalDateTime.of(2024, 7, 15, 0, 0, 0)))
+        add(TestRecord(226.54f, LocalDateTime.of(2024, 5, 7, 0, 0, 0)))
+        add(TestRecord(306.18f, LocalDateTime.of(2024, 5, 22, 0, 0, 0)))
+        add(TestRecord(1006.02f, LocalDateTime.of(2024, 7, 15, 0, 0, 0)))
     }
 
     tData.dataList.apply {

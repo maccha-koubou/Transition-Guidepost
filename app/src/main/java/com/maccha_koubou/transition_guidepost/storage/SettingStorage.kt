@@ -7,7 +7,7 @@ import com.maccha_koubou.transition_guidepost.model.chartDateSetting
 val chartDateSetting = chartDateSetting(
     { e2Data },
     { tData },
-    { null },
+    { medicationItemList[0] },
     { null },
     { null },
     { null },

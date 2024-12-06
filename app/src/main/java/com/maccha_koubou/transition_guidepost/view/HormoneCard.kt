@@ -33,6 +33,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.maccha_koubou.transition_guidepost.model.TestRecord
 import com.maccha_koubou.transition_guidepost.storage.e2Data
 import com.maccha_koubou.transition_guidepost.storage.tData
 import com.maccha_koubou.transition_guidepost.ui.theme.AddButtonColors
@@ -67,6 +68,7 @@ import com.patrykandpatrick.vico.core.common.shape.Corner
 import com.patrykandpatrick.vico.core.common.shape.CorneredShape
 import com.patrykandpatrick.vico.core.common.shape.CutCornerTreatment
 import com.patrykandpatrick.vico.core.common.shape.Shape
+import java.time.LocalDateTime
 
 
 const val hormoneCardTitle = "我的激素水平"
@@ -170,6 +172,25 @@ fun HormoneContent() {
                     // Add Data button
                     AddDataIconButton {
                         /* Add data menu */
+
+                        /*
+                            !!!!!!!!!!!!!!!!!!!!!
+                            !!!!Only for test!!!!
+                            !!!!!!!!!!!!!!!!!!!!!
+                         */
+                        e2Data.dataList.apply {
+                            add(TestRecord(92.98f, LocalDateTime.now()))
+                        }
+
+                        tData.dataList.apply {
+                            add(TestRecord(15.02f, LocalDateTime.now()))
+                        }
+
+                        /*
+                            !!!!!!!!!!!!!!!!!!!!!
+                            !!!!Only for test!!!!
+                            !!!!!!!!!!!!!!!!!!!!!
+                         */
                     }
                 }
             }

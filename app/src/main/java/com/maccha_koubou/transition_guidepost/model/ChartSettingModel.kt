@@ -79,5 +79,5 @@ class chartDateSetting(
 
     // The proportion of the displayed duration
     // in the total duration between the earliest date and latest date
-    val displayedDurationProportion: Float? = displayedDuration?.toFloat()?.div(totalDuration!!.toFloat())
+    val displayedDurationProportion: Float? get() =  displayedDuration?.toFloat()?.div(totalDuration!!.toFloat())
 }

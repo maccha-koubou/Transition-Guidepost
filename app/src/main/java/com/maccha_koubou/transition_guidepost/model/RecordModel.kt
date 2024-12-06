@@ -18,15 +18,16 @@ class Dosage(var dosage: Float, var unitWithoutInterval: String, var intervalDay
  */
 interface DataRecord{
     val time: LocalDateTime
+    val data: Float
 }
 
 class TestRecord(
-    val data: Float,
+    override val data: Float,
     override val time: LocalDateTime,
 ): DataRecord
 
 class MedicationRecord(
-    val data: Float,
+    override val data: Float,
     override val time: LocalDateTime,
 ): DataRecord
 
@@ -35,14 +36,19 @@ class CycleRecord(
     val endTime: LocalDateTime?,
 ): DataRecord {
     override val time get() = endTime ?: startTime
+    override val data = 0f
 }
 
 class TimePointRecord(
     override val time: LocalDateTime
-): DataRecord
+): DataRecord {
+    override val data = 0f
+}
 
 class BreastRecord(
     val upperBust: Float,
     val lowerBust: Float,
     override val time: LocalDateTime,
-): DataRecord
+): DataRecord {
+    override val data = 0f
+}

@@ -10,6 +10,7 @@ interface RecordedData<out T: DataRecord>{
     val name: String
     var color: Color
     var icon: ImageVector
+    val displayedUnit: String
     var isDataActive: Boolean
     var isAlarmActive: Boolean
     var alarmCycle: AlarmCycle?
@@ -23,12 +24,13 @@ data class TestData(
     override var color: Color,
     override var icon: ImageVector,
     val unit: Map<String, Float>, // Name of the unit & Ratio of all types to the first type
-    val recommendationValue: Pair<Float, Float>?, // Lower value & Higher value
+    val recommendationValue: ClosedFloatingPointRange<Float>?, // Lower value & Higher value
     override var isDataActive: Boolean,
     override var isAlarmActive: Boolean,
     override var alarmCycle: AlarmCycle?,
 ): RecordedData<TestRecord>, BodyData {
     override var dataList = mutableListOf<TestRecord>()
+    override var displayedUnit = unit.keys.toList()[0]
 }
 
 data class MedicationData(
@@ -42,6 +44,7 @@ data class MedicationData(
 ): RecordedData<MedicationRecord> {
     var currentDosage = defaultDosage
     override var dataList = mutableListOf<MedicationRecord>()
+    override val displayedUnit get() = "${currentDosage.dosage}${currentDosage.unitWithoutInterval}"
 
     fun addCommonRecord() {
         val newRecord = MedicationRecord(currentDosage.dosage, LocalDateTime.now())
@@ -58,6 +61,7 @@ data class TimePointData(
     override var alarmCycle: AlarmCycle?,
 ): RecordedData<TimePointRecord>, BodyData {
     override var dataList = mutableListOf<TimePointRecord>()
+    override val displayedUnit = ""
 }
 
 data class BreastData(
@@ -69,6 +73,7 @@ data class BreastData(
     override var alarmCycle: AlarmCycle?,
 ): RecordedData<BreastRecord>, BodyData {
     override var dataList = mutableListOf<BreastRecord>()
+    override val displayedUnit = ""
 }
 
 data class CycleData(
@@ -80,4 +85,5 @@ data class CycleData(
     override var alarmCycle: AlarmCycle?,
 ): RecordedData<CycleRecord>, BodyData {
     override var dataList = mutableListOf<CycleRecord>()
+    override val displayedUnit = ""
 }
