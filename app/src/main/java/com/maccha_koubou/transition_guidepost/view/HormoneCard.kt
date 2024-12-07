@@ -1,5 +1,7 @@
 package com.maccha_koubou.transition_guidepost.view
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -73,6 +75,7 @@ import java.time.LocalDateTime
 
 const val hormoneCardTitle = "我的激素水平"
 
+@RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
 @Preview
 @Composable
 fun HormoneCard() {
@@ -82,7 +85,7 @@ fun HormoneCard() {
         colors = cardColors
     ) {
         when (e2Data.dataList.isEmpty() && tData.dataList.isEmpty()) {
-            true -> /*Empty*/HormoneContent()
+            true -> EmptyHormoneContent()
             else -> HormoneContent()
         }
     }
@@ -131,6 +134,7 @@ fun EmptyHormoneContent() {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
 @Preview
 @Composable
 fun HormoneContent() {
@@ -179,11 +183,11 @@ fun HormoneContent() {
                             !!!!!!!!!!!!!!!!!!!!!
                          */
                         e2Data.dataList.apply {
-                            add(TestRecord(92.98f, LocalDateTime.now()))
+                            add(TestRecord(1092.98f, LocalDateTime.now()))
                         }
 
                         tData.dataList.apply {
-                            add(TestRecord(15.02f, LocalDateTime.now()))
+                            add(TestRecord(25.02f, LocalDateTime.now()))
                         }
 
                         /*

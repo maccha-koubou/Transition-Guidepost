@@ -1,6 +1,7 @@
 package com.maccha_koubou.transition_guidepost.view
 
 import android.os.Build
+import androidx.annotation.Dimension
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -62,6 +63,7 @@ import com.patrykandpatrick.vico.core.cartesian.decoration.HorizontalBox
 import com.patrykandpatrick.vico.core.cartesian.layer.ColumnCartesianLayer
 import com.patrykandpatrick.vico.core.cartesian.layer.LineCartesianLayer
 import com.patrykandpatrick.vico.core.cartesian.marker.DefaultCartesianMarker
+import com.patrykandpatrick.vico.core.common.Dimensions
 import com.patrykandpatrick.vico.core.common.component.ShapeComponent
 import com.patrykandpatrick.vico.core.common.component.TextComponent
 import com.patrykandpatrick.vico.core.common.shape.Corner
@@ -95,13 +97,16 @@ fun HormoneChart() {
                         x = timeRange,
                         y = timeRangeAssistance)
                 }
-                lineSeries {
-                    series(
-                        x = chartDateSetting.hormoneChartFirstData().dataList.map {
-                            it.time.toLocalDate().toEpochDay()
-                        },
-                        y = chartDateSetting.hormoneChartFirstData().dataList.map { it.data })
+                if (chartDateSetting.hormoneChartFirstData().dataList.isNotEmpty()) {
+                    lineSeries {
+                        series(
+                            x = chartDateSetting.hormoneChartFirstData().dataList.map {
+                                it.time.toLocalDate().toEpochDay()
+                            },
+                            y = chartDateSetting.hormoneChartFirstData().dataList.map { it.data })
+                    }
                 }
+                if (chartDateSetting.hormoneChartSecondData().dataList.isNotEmpty()) {
                 lineSeries {
                     series(
                         x = chartDateSetting.hormoneChartSecondData().dataList.map {
@@ -109,6 +114,7 @@ fun HormoneChart() {
                         },
                         y = chartDateSetting.hormoneChartSecondData().dataList.map { it.data })
                 }
+                    }
             }
             timeRange.removeLast()
             timeRangeAssistance.removeLast()
@@ -132,21 +138,20 @@ fun HormoneChart() {
     val axisGuideline = rememberAxisGuidelineComponent(
         fill = fill(LightPurple),
         thickness = 1.dp,
-        shape = dashedShape(Shape.Rectangle, 10.dp, 0.dp)
+        shape = dashedShape(Shape.Rectangle, 10.dp, 0.dp),
+        margins = Dimensions(0.01f, 0f)
     )
 
     // Colors
+
     val firstColor = chartDateSetting.hormoneChartFirstData().color
     val secondColor = chartDateSetting.hormoneChartSecondData().color
-
-
 
         // The data name and unit label
     Column(Modifier.fillMaxSize()) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 8.dp)
         ) {
             Column(horizontalAlignment = Alignment.Start) {
                 Text(
@@ -263,7 +268,7 @@ fun HormoneChart() {
                     label = rememberAxisLabelComponent(secondColor),
                     tick = axisLine,
                     tickLength = 0.dp,
-                    guideline = axisGuideline
+                    guideline = axisLine
                 ),
                 bottomAxis = HorizontalAxis.rememberBottom(
                     line = rememberAxisLineComponent(fill(LightPurple), 1.dp),
@@ -274,22 +279,27 @@ fun HormoneChart() {
                     },
                     label = rememberAxisLabelComponent(Gray),
                     tick = rememberAxisTickComponent(fill(LightPurple), 2.dp),
-                    guideline = rememberAxisGuidelineComponent(fill(Color.Transparent))
+                    guideline = rememberAxisGuidelineComponent(fill(Color.Transparent)),
+                    itemPlacer = HorizontalAxis.ItemPlacer.aligned(90)
                 ),
                 // The recommendation range box of the first data series
                 decorations = listOfNotNull(
-                    recommendationRangeBoxOrNull(
-                        (chartDateSetting.hormoneChartFirstData() as TestData).recommendationValue,
-                        chartDateSetting.hormoneChartFirstData().dataList.maxOf { it.data },
-                        firstColor,
-                        Axis.Position.Vertical.Start
-                    ),
-                    recommendationRangeBoxOrNull(
-                        (chartDateSetting.hormoneChartSecondData() as TestData).recommendationValue,
-                        chartDateSetting.hormoneChartSecondData().dataList.maxOf { it.data },
-                        secondColor,
-                        Axis.Position.Vertical.End
-                    )
+                    if (chartDateSetting.hormoneChartFirstData().dataList.isNotEmpty()) {
+                        recommendationRangeBoxOrNull(
+                            (chartDateSetting.hormoneChartFirstData() as TestData).recommendationValue,
+                            chartDateSetting.hormoneChartFirstData().dataList.maxOf { it.data },
+                            firstColor,
+                            Axis.Position.Vertical.Start
+                        )
+                    } else { null },
+                    if (chartDateSetting.hormoneChartSecondData().dataList.isNotEmpty()) {
+                        recommendationRangeBoxOrNull(
+                            (chartDateSetting.hormoneChartSecondData() as TestData).recommendationValue,
+                            chartDateSetting.hormoneChartSecondData().dataList.maxOf { it.data },
+                            secondColor,
+                            Axis.Position.Vertical.End
+                        )
+                    } else { null }
                 ),
                 marker = rememberMarker()
             ),
@@ -331,15 +341,19 @@ private fun recommendationRangeBoxOrNull(
         val recommendationLowerRange = recommendationRange.start
         val recommendationHigherRange = recommendationRange.endInclusive
 
+        // This value is used to extend the recommendation range box
+        // to a little higher position for a better look
+        val largestDataInTheChartWithMarginal = largestDataInTheChart * 1.03f
+
         // If the recommendation range's lower edge can be shown in this chart
-        if (recommendationLowerRange < largestDataInTheChart) {
+        if (recommendationLowerRange < largestDataInTheChartWithMarginal) {
             return HorizontalBox(
                 y = {
                     // The lower edge of the range box is set as the lower edge of the recommendation range
                     (recommendationLowerRange.toDouble())..(
                             // Only use the recommendation range's higher edge
                             // when it can be shown inside this chart
-                            minOf(recommendationHigherRange, largestDataInTheChart).toDouble()
+                            minOf(recommendationHigherRange, largestDataInTheChartWithMarginal).toDouble()
                             )
                 },
                 // The transparent color of the recommendation range box

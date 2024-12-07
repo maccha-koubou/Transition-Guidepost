@@ -103,8 +103,8 @@ fun descriptionTextOfItem(item: RecordedData<out DataRecord>): String {
         is MedicationData -> {
             val dosage = DecimalFormat("#.##").format(item.currentDosage.dosage)
             val days = if (item.currentDosage.intervalDays == 1) "" else item.currentDosage.intervalDays.toString()
-            val dosesPerDays = if (item.currentDosage.dosesPerDay == 1) "" else "${item.currentDosage.dosesPerDay}次每"
-            return "$dosage${item.currentDosage.unitWithoutInterval}/${dosesPerDays}${days}天"
+            val dosesPerDays = if (item.currentDosage.dosesPerDay == 1) "" else "${item.currentDosage.dosesPerDay}次"
+            return "$dosage${item.currentDosage.unitWithoutInterval}/每${days}天${dosesPerDays}"
         }
         is TestData -> return ""
         is CycleData -> return ""

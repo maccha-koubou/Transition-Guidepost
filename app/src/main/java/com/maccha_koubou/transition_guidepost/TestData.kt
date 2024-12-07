@@ -18,7 +18,7 @@ fun addTestData() {
         add(MedicationData("补佳乐", LightPink, Icons.Filled.Refresh, Dosage(1f, "mg", 1, 3), true, false, null))
         add(MedicationData("色普龙", LightBlue, Icons.Filled.Info, Dosage(12.5f, "mg", 2,1), true, false, null))
     }
-
+    /*
     e2Data.dataList.apply {
         add(TestRecord(92.98f, LocalDateTime.of(2023, 3, 15, 0, 0, 0)))
         add(TestRecord(108.5f, LocalDateTime.of(2024, 3, 27, 0, 0, 0)))
@@ -27,9 +27,11 @@ fun addTestData() {
         add(TestRecord(606.02f, LocalDateTime.of(2024, 7, 15, 0, 0, 0)))
     }
 
+     */
+
     tData.dataList.apply {
         add(TestRecord(15.02f, LocalDateTime.of(2023, 3, 15, 0, 0, 0)))
-        add(TestRecord(10.1f, LocalDateTime.of(2024, 3, 27, 0, 0, 0)))
+        add(TestRecord(2.2f, LocalDateTime.of(2024, 3, 27, 0, 0, 0)))
         add(TestRecord(1.05f, LocalDateTime.of(2024, 6, 22, 0, 0, 0)))
         add(TestRecord(0.09f, LocalDateTime.of(2024, 7, 15, 0, 0, 0)))
     }
