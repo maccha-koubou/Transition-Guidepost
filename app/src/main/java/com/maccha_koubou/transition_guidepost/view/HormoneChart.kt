@@ -78,49 +78,17 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun HormoneChart() {
     val modelProducer = remember { CartesianChartModelProducer() }
+
     val timeRange = mutableListOf(chartDateSetting.earliestDateTotal!!, chartDateSetting.endDate!!)
     val timeRangeAssistance = mutableListOf(0,0) // Only used for scroll the chart to the latest day
 
-    // Update the data series on the chart every 0.3s
-    LaunchedEffect(Unit) {
-        while (true) {
-            // Add and remove an item in these 2 lists
-            // to force the chart scroll to the latest day
-            timeRange.add(chartDateSetting.endDate!!)
-            timeRangeAssistance.add(0)
+    // Is each data series is not empty
+    var isData1Available by remember { mutableStateOf(chartDateSetting.hormoneChartFirstData().dataList.isNotEmpty()) }
+    var isData2Available by remember { mutableStateOf(chartDateSetting.hormoneChartSecondData().dataList.isNotEmpty()) }
 
-            modelProducer.runTransaction {
-                // The first series used to keep the chart
-                // including the earliest and latest date of all data
-                lineSeries {
-                    series(
-                        x = timeRange,
-                        y = timeRangeAssistance)
-                }
-                if (chartDateSetting.hormoneChartFirstData().dataList.isNotEmpty()) {
-                    lineSeries {
-                        series(
-                            x = chartDateSetting.hormoneChartFirstData().dataList.map {
-                                it.time.toLocalDate().toEpochDay()
-                            },
-                            y = chartDateSetting.hormoneChartFirstData().dataList.map { it.data })
-                    }
-                }
-                if (chartDateSetting.hormoneChartSecondData().dataList.isNotEmpty()) {
-                lineSeries {
-                    series(
-                        x = chartDateSetting.hormoneChartSecondData().dataList.map {
-                            it.time.toLocalDate().toEpochDay()
-                        },
-                        y = chartDateSetting.hormoneChartSecondData().dataList.map { it.data })
-                }
-                    }
-            }
-            timeRange.removeLast()
-            timeRangeAssistance.removeLast()
-            delay(300L)
-        }
-    }
+    // Colors
+    val firstColor = chartDateSetting.hormoneChartFirstData().color
+    val secondColor = chartDateSetting.hormoneChartSecondData().color
 
     // To only show the data within the customized date duration
     val zoomState = remember { Zoom { context, horizontalDimensions, bounds ->
@@ -142,12 +110,55 @@ fun HormoneChart() {
         margins = Dimensions(0.01f, 0f)
     )
 
-    // Colors
+    // Update the data series on the chart every 0.3s
+    LaunchedEffect(Unit) {
+        while (true) {
+            // Add and remove an item in these 2 lists
+            // to force the chart scroll to the latest day
+            timeRange.add(chartDateSetting.endDate!!)
+            timeRangeAssistance.add(0)
 
-    val firstColor = chartDateSetting.hormoneChartFirstData().color
-    val secondColor = chartDateSetting.hormoneChartSecondData().color
+            isData1Available = chartDateSetting.hormoneChartFirstData().dataList.isNotEmpty()
+            isData2Available = chartDateSetting.hormoneChartSecondData().dataList.isNotEmpty()
 
-        // The data name and unit label
+            modelProducer.runTransaction {
+                // The first series used to keep the chart
+                // including the earliest and latest date of all data
+                lineSeries {
+                    series(
+                        x = timeRange,
+                        y = timeRangeAssistance)
+                }
+                if (isData1Available) {
+                    lineSeries {
+                        series(
+                            x = chartDateSetting.hormoneChartFirstData().dataList.map {
+                                it.time.toLocalDate().toEpochDay()
+                            },
+                            y = chartDateSetting.hormoneChartFirstData().dataList.map { it.data })
+                    }
+                }
+                if (isData2Available) {
+                    lineSeries {
+                        series(
+                            x = chartDateSetting.hormoneChartSecondData().dataList.map {
+                                it.time.toLocalDate().toEpochDay()
+                            },
+                            y = chartDateSetting.hormoneChartSecondData().dataList.map { it.data })
+                    }
+
+                }
+            }
+
+
+
+            timeRange.removeLast()
+            timeRangeAssistance.removeLast()
+            delay(300L)
+        }
+    }
+
+    // The data name and unit label
     Column(Modifier.fillMaxSize()) {
         Row(
             modifier = Modifier
@@ -187,75 +198,100 @@ fun HormoneChart() {
         // The chart itself
         CartesianChartHost(
             chart = rememberCartesianChart(
-
-                // Nothing is shown in this layer
-                rememberLineCartesianLayer(
-                    LineCartesianLayer.LineProvider.series(
-                        LineCartesianLayer.rememberLine(
-                            fill = remember { LineCartesianLayer.LineFill.single(fill(Color.Transparent)) },
-                            areaFill = null,
-                            thickness = 0.dp
-                        )
-                    )
-                ),
-
-                rememberLineCartesianLayer(
-                    LineCartesianLayer.LineProvider.series(
-                        LineCartesianLayer.rememberLine(
-                            fill = remember { LineCartesianLayer.LineFill.single(fill(firstColor)) },
-                            areaFill = null,
-                            thickness = 2.dp,
-                            pointProvider = remember {
-                                // Point style (circle) of the first data series
-                                LineCartesianLayer.PointProvider.single(
-                                    LineCartesianLayer.Point(
-                                        ShapeComponent(
-                                            fill = fill(White),
-                                            shape = CorneredShape(
-                                                Corner.FullyRounded,
-                                                Corner.FullyRounded,
-                                                Corner.FullyRounded,
-                                                Corner.FullyRounded
-                                            ),
-                                            strokeFill = fill(firstColor),
-                                            strokeThicknessDp = 1.5f
-                                        ),
-                                        sizeDp = 10f
-                                    )
-                                )
-                            },
-                            // Make the line polygonal instead of curved
-                            pointConnector = remember { LineCartesianLayer.PointConnector.cubic(0f) }
+                *listOfNotNull(
+                    // Nothing is shown in this layer
+                    rememberLineCartesianLayer(
+                        LineCartesianLayer.LineProvider.series(
+                            LineCartesianLayer.rememberLine(
+                                fill = remember { LineCartesianLayer.LineFill.single(fill(Color.Transparent)) },
+                                areaFill = null,
+                                thickness = 0.dp
+                            )
                         )
                     ),
-                    verticalAxisPosition = Axis.Position.Vertical.Start
-                ),
 
-                rememberLineCartesianLayer(
-                    LineCartesianLayer.LineProvider.series(
-                        LineCartesianLayer.rememberLine(
-                            fill = remember { LineCartesianLayer.LineFill.single(fill(secondColor)) },
-                            areaFill = null,
-                            thickness = 2.dp,
-                            pointProvider = remember {
-                                // Point style (square) of the second data series
-                                LineCartesianLayer.PointProvider.single(
-                                    LineCartesianLayer.Point(
-                                        ShapeComponent(
-                                            fill = fill(White),
-                                            strokeFill = fill(secondColor),
-                                            strokeThicknessDp = 1.5f
-                                        ),
-                                        sizeDp = 10f
-                                    )
+                    if (isData1Available) {
+                        rememberLineCartesianLayer(
+                            LineCartesianLayer.LineProvider.series(
+                                LineCartesianLayer.rememberLine(
+                                    fill = remember {
+                                        LineCartesianLayer.LineFill.single(
+                                            fill(
+                                                firstColor
+                                            )
+                                        )
+                                    },
+                                    areaFill = null,
+                                    thickness = 2.dp,
+                                    pointProvider = remember {
+                                        // Point style (circle) of the first data series
+                                        LineCartesianLayer.PointProvider.single(
+                                            LineCartesianLayer.Point(
+                                                ShapeComponent(
+                                                    fill = fill(White),
+                                                    shape = CorneredShape(
+                                                        Corner.FullyRounded,
+                                                        Corner.FullyRounded,
+                                                        Corner.FullyRounded,
+                                                        Corner.FullyRounded
+                                                    ),
+                                                    strokeFill = fill(firstColor),
+                                                    strokeThicknessDp = 1.5f
+                                                ),
+                                                sizeDp = 10f
+                                            )
+                                        )
+                                    },
+                                    // Make the line polygonal instead of curved
+                                    pointConnector = remember {
+                                        LineCartesianLayer.PointConnector.cubic(
+                                            0f
+                                        )
+                                    }
                                 )
-                            },
-                            // Make the line polygonal instead of curved
-                            pointConnector = remember { LineCartesianLayer.PointConnector.cubic(0f) }
+                            ),
+                            verticalAxisPosition = Axis.Position.Vertical.Start
                         )
-                    ),
-                    verticalAxisPosition = Axis.Position.Vertical.End,
-                ),
+                    } else { null },
+
+                    if (isData2Available) {
+                        rememberLineCartesianLayer(
+                            LineCartesianLayer.LineProvider.series(
+                                LineCartesianLayer.rememberLine(
+                                    fill = remember {
+                                        LineCartesianLayer.LineFill.single(
+                                            fill(
+                                                secondColor
+                                            )
+                                        )
+                                    },
+                                    areaFill = null,
+                                    thickness = 2.dp,
+                                    pointProvider = remember {
+                                        // Point style (square) of the second data series
+                                        LineCartesianLayer.PointProvider.single(
+                                            LineCartesianLayer.Point(
+                                                ShapeComponent(
+                                                    fill = fill(White),
+                                                    strokeFill = fill(secondColor),
+                                                    strokeThicknessDp = 1.5f
+                                                ),
+                                                sizeDp = 10f
+                                            )
+                                        )
+                                    },
+                                    // Make the line polygonal instead of curved
+                                    pointConnector = remember {
+                                        LineCartesianLayer.PointConnector.cubic(
+                                            0f
+                                        )
+                                    }
+                                )
+                            ),
+                            verticalAxisPosition = Axis.Position.Vertical.End,
+                        )
+                    } else { null }
+                ).toTypedArray(),
                 startAxis = VerticalAxis.rememberStart(
                     line = axisLine,
                     label = rememberAxisLabelComponent(firstColor),
@@ -284,7 +320,7 @@ fun HormoneChart() {
                 ),
                 // The recommendation range box of the first data series
                 decorations = listOfNotNull(
-                    if (chartDateSetting.hormoneChartFirstData().dataList.isNotEmpty()) {
+                    if (isData1Available) {
                         recommendationRangeBoxOrNull(
                             (chartDateSetting.hormoneChartFirstData() as TestData).recommendationValue,
                             chartDateSetting.hormoneChartFirstData().dataList.maxOf { it.data },
@@ -292,7 +328,7 @@ fun HormoneChart() {
                             Axis.Position.Vertical.Start
                         )
                     } else { null },
-                    if (chartDateSetting.hormoneChartSecondData().dataList.isNotEmpty()) {
+                    if (isData2Available) {
                         recommendationRangeBoxOrNull(
                             (chartDateSetting.hormoneChartSecondData() as TestData).recommendationValue,
                             chartDateSetting.hormoneChartSecondData().dataList.maxOf { it.data },
@@ -301,7 +337,10 @@ fun HormoneChart() {
                         )
                     } else { null }
                 ),
-                marker = rememberMarker()
+                marker = rememberMarker(
+                    chartDateSetting.hormoneChartFirstData(),
+                    chartDateSetting.hormoneChartSecondData()
+                    )
             ),
             modelProducer = modelProducer,
             modifier = Modifier.fillMaxSize(),

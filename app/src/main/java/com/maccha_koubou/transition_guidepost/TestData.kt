@@ -26,13 +26,13 @@ fun addTestData() {
         add(TestRecord(306.18f, LocalDateTime.of(2024, 5, 22, 0, 0, 0)))
         add(TestRecord(606.02f, LocalDateTime.of(2024, 7, 15, 0, 0, 0)))
     }
+*/
 
-     */
 
     tData.dataList.apply {
         add(TestRecord(15.02f, LocalDateTime.of(2023, 3, 15, 0, 0, 0)))
         add(TestRecord(2.2f, LocalDateTime.of(2024, 3, 27, 0, 0, 0)))
-        add(TestRecord(1.05f, LocalDateTime.of(2024, 6, 22, 0, 0, 0)))
-        add(TestRecord(0.09f, LocalDateTime.of(2024, 7, 15, 0, 0, 0)))
+        //add(TestRecord(1.05f, LocalDateTime.of(2024, 6, 22, 0, 0, 0)))
+        //add(TestRecord(0.09f, LocalDateTime.of(2024, 7, 15, 0, 0, 0)))
     }
 }
