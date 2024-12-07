@@ -114,9 +114,17 @@ open class ChartMarker(
         context: CartesianDrawingContext,
         targets: List<CartesianMarker.Target>,
     ) {
+        targets as List<LineCartesianLayerMarkerTarget>
+
+        // Except the time range data from the targets list
+        // to only draw guidelines and labels of the real data series
+        val targetsWithoutTimeRangeAssistance = targets.filter {
+            Fill(it.points[0].color) == (labelStyle1.background as ShapeComponent).fill
+                    || Fill(it.points[0].color) == (labelStyle2.background as ShapeComponent).fill
+        }
         with(context) {
-            drawGuideline(targets)
-            drawCustomizedLabel(context, targets, labelStyle1, labelStyle2, labelStyleDate)
+            drawGuideline(targetsWithoutTimeRangeAssistance)
+            drawCustomizedLabel(context, targetsWithoutTimeRangeAssistance, labelStyle1, labelStyle2, labelStyleDate)
         }
     }
 
@@ -130,62 +138,93 @@ open class ChartMarker(
     ) {
         targets as List<LineCartesianLayerMarkerTarget>
         val targetSize = targets.size
+
+        var label1: LineCartesianLayerMarkerTarget? = null
+        var label2: LineCartesianLayerMarkerTarget? = null
+
+        val minLabelDistance = label.getBounds(context, "").height()
+        val dateLabelY = context.layerBounds.bottom + minLabelDistance - context.dpToPx(5f)
+        val secondLowestLabelY = dateLabelY - minLabelDistance
+        val thirdLowestLabelY = secondLowestLabelY - minLabelDistance
+
         targets.forEachIndexed { index, target ->
-            val minLabelDistance = label.getBounds(context, "").height()
-            target.points.forEachIndexed { index, point ->
 
-                val date = LocalDate.ofEpochDay(point.entry.x.toLong())
-                val formatter = DateTimeFormatter.ofPattern("yyyy年M月d日")
+            // Draw date label
+            val date = LocalDate.ofEpochDay(target.points[0].entry.x.toLong())
+            val formatter = DateTimeFormatter.ofPattern("yyyy年M月d日")
+            labelStyleDate.draw(
+                context = context,
+                text = date.format(formatter),
+                x = target.canvasX,
+                y = dateLabelY
+            )
 
-                labelStyleDate.draw(
-                    context = context,
-                    text = date.format(formatter),
-                    x = target.canvasX,
-                    y = context.layerBounds.bottom + minLabelDistance - context.dpToPx(5f)
-                )
-
-                val thisLabel: TextComponent
-                // Use the point's color as the label's color
-                when (Fill(point.color)) {
-                    (labelStyle1.background as ShapeComponent).fill ->
-                        thisLabel = labelStyle1
-
-                    else ->
-                        thisLabel = labelStyle2
-                }
-
-                thisLabel.draw(
-                    context = context,
-                    text = String.format("%.2f", point.entry.y),
-                    x = target.canvasX,
-                    // Avoid labels overlap or become too close
-                    y = if (target.points.size == 2) {
-                        // If there are two labels and they are overlap
-                        if (target.points[0].canvasY == target.points[1].canvasY) {
-                            when (index) {
-                                // Move up the first label and move down the other
-                                0 -> point.canvasY + minLabelDistance / 2
-                                else -> point.canvasY - minLabelDistance / 2
-                            }
-                            // If there are two labels and they are too close
-                        } else if (abs(target.points[0].canvasY - target.points[1].canvasY) < minLabelDistance) {
-                            val labelOffset =
-                                (minLabelDistance - abs(target.points[0].canvasY - target.points[1].canvasY)) / 2
-                            when {
-                                // Move up the Upper label and move down the lower one
-                                point.canvasY >= target.points[0].canvasY && point.canvasY >= target.points[1].canvasY ->
-                                    point.canvasY + labelOffset
-
-                                else -> point.canvasY - labelOffset
-                            }
-                        } else {
-                            point.canvasY
-                        }
-                    } else {
-                        point.canvasY
-                    }
-                )
+            when (Fill(target.points[0].color)) {
+                (labelStyle1.background as ShapeComponent).fill ->
+                    label1 = target
+                (labelStyle2.background as ShapeComponent).fill ->
+                    label2 = target
+                else -> {}
             }
+        }
+
+        var label1Y = label1?.points?.get(0)?.canvasY
+        var label2Y = label2?.points?.get(0)?.canvasY
+
+        // Calculate the Y position of the two labels when they all exist
+        if (
+            label1Y != null
+            && label2Y != null
+            ) {
+            if (label1Y == label2Y) {
+                // If there are two labels and they are overlap
+                // Make sure that there is enough distance between them,
+                // and they are all have enough distance from the data label
+                label1Y = minOf(label1Y - minLabelDistance / 2, thirdLowestLabelY)
+                label2Y = minOf(label2Y + minLabelDistance / 2, secondLowestLabelY)
+
+            } else if (abs(label1Y - label2Y) < minLabelDistance) {
+                // If there are two labels and they are too close
+                val labelOffset =
+                    (minLabelDistance - abs(label1Y - label2Y)) / 2
+                when {
+                    // Move up the upper label and move down the lower one,
+                    // and make sure that they are all have enough distance from the data label
+                    label1Y >= label2Y -> {
+                        label1Y = minOf(label1Y + labelOffset, secondLowestLabelY)
+                        label2Y = minOf(label2Y - labelOffset, thirdLowestLabelY)
+                    }
+                    else -> {
+                        label1Y = minOf(label1Y - labelOffset, thirdLowestLabelY)
+                        label2Y = minOf(label2Y + labelOffset, secondLowestLabelY)
+                    }
+                }
+            } else {
+                label1Y = minOf(label1Y, secondLowestLabelY)
+                label2Y = minOf(label2Y, secondLowestLabelY)
+            }
+        // Make sure that the label have enough distance from the data label
+        } else if (label1Y != null) {
+            label1Y = minOf(label1Y, secondLowestLabelY)
+        } else if (label2Y != null) {
+            label2Y = minOf(label2Y, secondLowestLabelY)
+        }
+
+        if (label1 != null) {
+            labelStyle1.draw(
+                context = context,
+                text = String.format("%.2f", label1!!.points[0].entry.y),
+                x = label1!!.canvasX,
+                y = label1Y!!
+            )
+        }
+        if (label2 != null) {
+            labelStyle2.draw(
+                context = context,
+                text = String.format("%.2f", label2!!.points[0].entry.y),
+                x = label2!!.canvasX,
+                y = label2Y!!
+            )
         }
     }
 }
