@@ -84,13 +84,16 @@ fun HormoneChart() {
     val timeRange = mutableListOf(chartDateSetting.earliestDateTotal!!, chartDateSetting.endDate!!)
     val timeRangeAssistance = mutableListOf(0,0) // Only used for scroll the chart to the latest day
 
+    var data1 by remember { mutableStateOf(chartDateSetting.hormoneChartFirstData() as TestData) }
+    var data2 by remember { mutableStateOf(chartDateSetting.hormoneChartSecondData() as TestData) }
+
     // Is each data series is not empty
-    var isData1Available by remember { mutableStateOf(chartDateSetting.hormoneChartFirstData().dataList.isNotEmpty()) }
-    var isData2Available by remember { mutableStateOf(chartDateSetting.hormoneChartSecondData().dataList.isNotEmpty()) }
+    var isData1Available by remember { mutableStateOf(data1.dataList.isNotEmpty()) }
+    var isData2Available by remember { mutableStateOf(data2.dataList.isNotEmpty()) }
 
     // Colors
-    val firstColor = chartDateSetting.hormoneChartFirstData().color
-    val secondColor = chartDateSetting.hormoneChartSecondData().color
+    val color1 = data1.color
+    val color2 = data2.color
 
     var recommendationRangeBox by remember { mutableStateOf(listOf<HorizontalBox>()) }
 
@@ -122,29 +125,28 @@ fun HormoneChart() {
             timeRange.add(chartDateSetting.endDate!!)
             timeRangeAssistance.add(0)
 
-            isData1Available = chartDateSetting.hormoneChartFirstData().dataList.isNotEmpty()
-            isData2Available = chartDateSetting.hormoneChartSecondData().dataList.isNotEmpty()
+            data1.dataList = removeUnshownDate(removeSameDate(data1.dataList))
+            data2.dataList = removeUnshownDate(removeSameDate(data2.dataList))
+
+            isData1Available = data1.dataList.isNotEmpty()
+            isData2Available = data2.dataList.isNotEmpty()
 
             recommendationRangeBox = listOfNotNull(
                 if (isData1Available) {
                     recommendationRangeBoxOrNull(
-                        (chartDateSetting.hormoneChartFirstData() as TestData)
+                        (data1)
                             .recommendationValue,
-                        removeSameDate(
-                            chartDateSetting.hormoneChartFirstData().dataList
-                        ).maxOf { it.data },
-                        firstColor,
+                        data1.dataList.maxOf { it.data },
+                        color1,
                         Axis.Position.Vertical.Start
                     )
                 } else { null },
                 if (isData2Available) {
                     recommendationRangeBoxOrNull(
-                        (chartDateSetting.hormoneChartSecondData() as TestData)
+                        (data2)
                             .recommendationValue,
-                        removeSameDate(
-                            chartDateSetting.hormoneChartSecondData().dataList
-                        ).maxOf { it.data },
-                        secondColor,
+                        data2.dataList.maxOf { it.data },
+                        color2,
                         Axis.Position.Vertical.End
                     )
                 } else { null }
@@ -156,32 +158,27 @@ fun HormoneChart() {
                 lineSeries {
                     series(
                         x = timeRange,
-                        y = timeRangeAssistance)
+                        y = timeRangeAssistance
+                    )
                 }
                 if (isData1Available) {
                     lineSeries {
                         series(
-                            x = removeSameDate(
-                                chartDateSetting.hormoneChartFirstData().dataList
-                            ).map {
+                            x = data1.dataList.map {
                                 it.time.toLocalDate().toEpochDay()
                             },
-                            y = removeSameDate(
-                                chartDateSetting.hormoneChartFirstData().dataList
-                            ).map { it.data })
+                            y = data1.dataList.map { it.data }
+                        )
                     }
                 }
                 if (isData2Available) {
                     lineSeries {
                         series(
-                            x = removeSameDate(
-                                chartDateSetting.hormoneChartSecondData().dataList
-                            ).map {
+                            x = data2.dataList.map {
                                 it.time.toLocalDate().toEpochDay()
                             },
-                            y = removeSameDate(
-                                chartDateSetting.hormoneChartSecondData().dataList
-                            ).map { it.data })
+                            y = data2.dataList.map { it.data }
+                        )
                     }
 
                 }
@@ -201,31 +198,31 @@ fun HormoneChart() {
         ) {
             Column(horizontalAlignment = Alignment.Start) {
                 Text(
-                    text = chartDateSetting.hormoneChartFirstData().name,
+                    text = data1.name,
                     textAlign = TextAlign.Left,
                     style = Typography.labelMedium,
-                    color = firstColor
+                    color = color1
                 )
                 Text(
-                    text = chartDateSetting.hormoneChartFirstData().displayedUnit,
+                    text = data1.displayedUnit,
                     textAlign = TextAlign.Left,
                     style = Typography.labelSmall,
-                    color = firstColor
+                    color = color1
                 )
             }
             Row(Modifier.weight(1f)) {}
             Column(horizontalAlignment = Alignment.End) {
                 Text(
-                    text = chartDateSetting.hormoneChartSecondData().name,
+                    text = data2.name,
                     textAlign = TextAlign.Right,
                     style = Typography.labelMedium,
-                    color = secondColor
+                    color = color2
                 )
                 Text(
-                    text = chartDateSetting.hormoneChartSecondData().displayedUnit,
+                    text = data2.displayedUnit,
                     textAlign = TextAlign.Right,
                     style = Typography.labelSmall,
-                    color = secondColor
+                    color = color2
                 )
             }
         }
@@ -252,7 +249,7 @@ fun HormoneChart() {
                                     fill = remember {
                                         LineCartesianLayer.LineFill.single(
                                             fill(
-                                                firstColor
+                                                color1
                                             )
                                         )
                                     },
@@ -270,7 +267,7 @@ fun HormoneChart() {
                                                         Corner.FullyRounded,
                                                         Corner.FullyRounded
                                                     ),
-                                                    strokeFill = fill(firstColor),
+                                                    strokeFill = fill(color1),
                                                     strokeThicknessDp = 1.5f
                                                 ),
                                                 sizeDp = 10f
@@ -296,7 +293,7 @@ fun HormoneChart() {
                                     fill = remember {
                                         LineCartesianLayer.LineFill.single(
                                             fill(
-                                                secondColor
+                                                color2
                                             )
                                         )
                                     },
@@ -308,7 +305,7 @@ fun HormoneChart() {
                                             LineCartesianLayer.Point(
                                                 ShapeComponent(
                                                     fill = fill(White),
-                                                    strokeFill = fill(secondColor),
+                                                    strokeFill = fill(color2),
                                                     strokeThicknessDp = 1.5f
                                                 ),
                                                 sizeDp = 10f
@@ -329,14 +326,14 @@ fun HormoneChart() {
                 ).toTypedArray(),
                 startAxis = VerticalAxis.rememberStart(
                     line = axisLine,
-                    label = rememberAxisLabelComponent(firstColor),
+                    label = rememberAxisLabelComponent(color1),
                     tick = axisLine,
                     tickLength = 0.dp,
                     guideline = axisGuideline
                 ),
                 endAxis = VerticalAxis.rememberEnd(
                     line = axisLine,
-                    label = rememberAxisLabelComponent(secondColor),
+                    label = rememberAxisLabelComponent(color2),
                     tick = axisLine,
                     tickLength = 0.dp,
                     guideline = axisLine
@@ -356,8 +353,8 @@ fun HormoneChart() {
                 // The recommendation range box of the first data series
                 decorations = recommendationRangeBox,
                 marker = rememberMarker(
-                    chartDateSetting.hormoneChartFirstData(),
-                    chartDateSetting.hormoneChartSecondData()
+                    data1,
+                    data2
                     )
             ),
             modelProducer = modelProducer,
@@ -382,10 +379,9 @@ fun HormoneChart() {
 
 /**
  * Remove the data with the same date information,
- * and only left the data in the latter place in the list
+ * and only leave the data in the latter place in the list
  */
-private fun removeSameDate(list: MutableList<DataRecord>): MutableList<TestRecord> {
-    list as MutableList<TestRecord>
+private fun removeSameDate(list: MutableList<TestRecord>): MutableList<TestRecord> {
     val finalList = mutableListOf<TestRecord>()
     val existingTime = mutableListOf<LocalDate>()
     list.asReversed().forEach{
@@ -395,6 +391,24 @@ private fun removeSameDate(list: MutableList<DataRecord>): MutableList<TestRecor
         }
     }
     return finalList.asReversed()
+}
+
+/**
+ * Remove the data that are too early to be shown in this chart
+ * Only leave the latest one among all the date before the displayable range
+ * to make sure that the line in the chart can extend beyond the left edge of the chart
+ */
+private fun removeUnshownDate(list: MutableList<TestRecord>): MutableList<TestRecord> {
+    val latestUnshownDate = list
+        .filter { it.time.toLocalDate().toEpochDay() < chartDateSetting.finalStartDate!! }
+        .maxByOrNull { it.time }
+        ?.time
+    return if (latestUnshownDate != null) {
+        list
+            .filter {
+                it.time >= latestUnshownDate
+            }.toMutableList()
+    } else { list }
 }
 
 /**
