@@ -107,7 +107,7 @@ fun HormoneChart() {
         fill = fill(LightPurple),
         thickness = 1.dp,
         shape = dashedShape(Shape.Rectangle, 10.dp, 0.dp),
-        margins = Dimensions(0.01f, 0f)
+        margins = Dimensions(1f, 0f)
     )
 
     // Update the data series on the chart every 0.3s

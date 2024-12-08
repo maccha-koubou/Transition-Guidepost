@@ -136,6 +136,7 @@ open class ChartMarker(
         targets: List<CartesianMarker.Target>,
     ) {
         targets as List<LineCartesianLayerMarkerTarget>
+
         // Except the time range data from the targets list
         // to only draw guidelines and labels of the real data series
         /*val targetsWithoutTimeRangeAssistance = targets.filter {
@@ -143,11 +144,12 @@ open class ChartMarker(
                     || Fill(it.points[0].color) == (labelStyle2.background as ShapeComponent).fill
         }*/
         //val targetsWithoutTimeRangeAssistance = targets.drop(0)
+
         with(context) {
-            drawGuideline(targets/*WithoutTimeRangeAssistance*/)
+            drawGuideline(targets)
             drawCustomizedLabel(
                 context,
-                targets/*WithoutTimeRangeAssistance*/,
+                targets,
                 labelStyle1,
                 labelStyle2,
                 labelStyleDate,
@@ -172,7 +174,7 @@ open class ChartMarker(
 
         var label1: LineCartesianLayerMarkerTarget? = null
         var label2: LineCartesianLayerMarkerTarget? = null
-        var isTwoDataTheSame = false
+        var isTwoDataTheSame: MutableList<LineCartesianLayerMarkerTarget> = mutableListOf()
 
         val minLabelDistance = label.getBounds(context, "").height()
         val dateLabelY = context.layerBounds.bottom + minLabelDistance - context.dpToPx(5f)
@@ -191,33 +193,40 @@ open class ChartMarker(
                 y = dateLabelY
             )
 
-            if (data1 != null && data2 != null)
-            {
-                if (data1.dataList.any {
-                    it.data == target.points[0].entry.y.toFloat()
-                            &&
-                            it.time.toLocalDate().toEpochDay() == target.points[0].entry.x.toLong() }
-                ) {
-                    label1 = target
-                } else if (data2.dataList.any {
-                        it.data == target.points[0].entry.y.toFloat()
-                                &&
-                                it.time.toLocalDate().toEpochDay() == target.points[0].entry.x.toLong() }
-                ) {
-                    label2 = target
-                }
-            }
-
-            /*
             when (Fill(target.points[0].color)) {
                 (labelStyle1.background as ShapeComponent).fill ->
                     label1 = target
                 (labelStyle2.background as ShapeComponent).fill ->
                     label2 = target
-                else -> {}
+                else -> {
+                    // Having no color information means
+                    // this point is the only data in the data series.
+                    // To determine the corresponding label style of this color-missing point,
+                    // we use the original data and determine whether the point matches one of them,
+                    // and then assign corresponding label style to the point
+                    if (data1 != null) {
+                        if (data1.dataList.any {
+                                it.data == target.points[0].entry.y.toFloat()
+                                        &&
+                                        it.time.toLocalDate().toEpochDay() == target.points[0].entry.x.toLong() }
+                        ) {
+                            label1 = target
+                        }
+                    }
+                    if (data2 != null) {
+                        if (data2.dataList.any {
+                                it.data == target.points[0].entry.y.toFloat()
+                                        &&
+                                        it.time.toLocalDate().toEpochDay() == target.points[0].entry.x.toLong() }
+                        ) {
+                            label2 = target
+                        }
+                    }
+                }
             }
-             */
         }
+
+
 
         var label1Y = label1?.points?.get(0)?.canvasY
         var label2Y = label2?.points?.get(0)?.canvasY
