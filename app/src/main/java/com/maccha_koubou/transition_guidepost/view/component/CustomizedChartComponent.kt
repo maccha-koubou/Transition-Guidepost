@@ -2,6 +2,7 @@ package com.maccha_koubou.transition_guidepost.view.component
 
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
+import android.graphics.RectF
 import android.text.Layout
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -129,8 +130,6 @@ open class ChartMarker(
     val data2: RecordedData<DataRecord>?
 ) : DefaultCartesianMarker(labelStyle1, valueFormatter, labelPosition, indicator, indicatorSizeDp, guideline) {
 
-
-
     override fun drawOverLayers(
         context: CartesianDrawingContext,
         targets: List<CartesianMarker.Target>,
@@ -169,6 +168,9 @@ open class ChartMarker(
         data1: RecordedData<DataRecord>?,
         data2: RecordedData<DataRecord>?
     ) {
+        var thisLayerBounds: RectF
+        with(context) { thisLayerBounds = layerBounds }
+
         targets as List<LineCartesianLayerMarkerTarget>
         val targetSize = targets.size
 
@@ -186,10 +188,16 @@ open class ChartMarker(
             // Draw date label
             val date = LocalDate.ofEpochDay(target.points[0].entry.x.toLong())
             val formatter = DateTimeFormatter.ofPattern("yyyy年M月d日")
+            val minLabelWidth = label.getBounds(context, date.format(formatter)).width()
             labelStyleDate.draw(
                 context = context,
                 text = date.format(formatter),
-                x = target.canvasX,
+                x = maxOf(
+                        minOf(
+                            target.canvasX,
+                            thisLayerBounds.right - minLabelWidth / 2 + minLabelDistance / 2),
+                    thisLayerBounds.left + minLabelWidth / 2 - minLabelDistance / 2
+                ),
                 y = dateLabelY
             )
 
@@ -271,18 +279,38 @@ open class ChartMarker(
         }
 
         if (label1 != null) {
+            val minLabelWidth = label.getBounds(
+                context,
+                String.format("%.2f", label1!!.points[0].entry.y)
+            ).width()
+
             labelStyle1.draw(
                 context = context,
                 text = String.format("%.2f", label1!!.points[0].entry.y),
-                x = label1!!.canvasX,
+                x = maxOf(
+                        minOf(
+                            label1!!.canvasX,
+                             thisLayerBounds.right - minLabelWidth / 2 + minLabelDistance / 2),
+                        thisLayerBounds.left + minLabelWidth / 2 - minLabelDistance / 2
+                ),
                 y = label1Y!!
             )
         }
         if (label2 != null) {
+            val minLabelWidth = label.getBounds(
+                context,
+                String.format("%.2f", label2!!.points[0].entry.y)
+            ).width()
+
             labelStyle2.draw(
                 context = context,
                 text = String.format("%.2f", label2!!.points[0].entry.y),
-                x = label2!!.canvasX,
+                x = maxOf(
+                        minOf(
+                            label2!!.canvasX,
+                            thisLayerBounds.right - minLabelWidth / 2 + minLabelDistance / 2),
+                        thisLayerBounds.left + minLabelWidth / 2 - minLabelDistance / 2
+                ),
                 y = label2Y!!
             )
         }
