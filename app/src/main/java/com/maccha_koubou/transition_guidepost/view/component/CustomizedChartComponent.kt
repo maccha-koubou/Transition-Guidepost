@@ -10,6 +10,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.maccha_koubou.transition_guidepost.model.DataRecord
 import com.maccha_koubou.transition_guidepost.model.RecordedData
+import com.maccha_koubou.transition_guidepost.model.TestData
 import com.maccha_koubou.transition_guidepost.ui.theme.Blue
 import com.maccha_koubou.transition_guidepost.ui.theme.Gray
 import com.maccha_koubou.transition_guidepost.ui.theme.Pink
@@ -60,6 +61,7 @@ internal fun rememberMarker(
     val labelStyle1 =
         rememberTextComponent(
             color = White,
+
             textAlignment = Layout.Alignment.ALIGN_CENTER,
             padding = dimensions(8.dp, 2.dp),
             background = rememberShapeComponent(
@@ -279,14 +281,27 @@ open class ChartMarker(
         }
 
         if (label1 != null) {
+            var text = String.format("%.2f", label1!!.points[0].entry.y)
+
+            // Draw the "!" of TestData when the data is out of recommendation range
+            if (data1 is TestData) {
+                if (data1.recommendationValue != null) {
+                    if (label1!!.points[0].entry.y > data1.recommendationValue.endInclusive) {
+                        text = "▲" + text
+                    } else if ( label1!!.points[0].entry.y < data1.recommendationValue.start ) {
+                        text = "▼" + text
+                    }
+                }
+            }
+
             val minLabelWidth = label.getBounds(
                 context,
-                String.format("%.2f", label1!!.points[0].entry.y)
+                text
             ).width()
 
             labelStyle1.draw(
                 context = context,
-                text = String.format("%.2f", label1!!.points[0].entry.y),
+                text = text,
                 x = maxOf(
                         minOf(
                             label1!!.canvasX,
@@ -297,14 +312,27 @@ open class ChartMarker(
             )
         }
         if (label2 != null) {
+            var text = String.format("%.2f", label2!!.points[0].entry.y)
+
+            // Draw the "!" of TestData when the data is out of recommendation range
+            if (data2 is TestData) {
+                if (data2.recommendationValue != null) {
+                    if (label2!!.points[0].entry.y > data2.recommendationValue.endInclusive) {
+                        text = "▲" + text
+                    } else if ( label2!!.points[0].entry.y < data2.recommendationValue.start ) {
+                        text = "▼" + text
+                    }
+                }
+            }
+
             val minLabelWidth = label.getBounds(
                 context,
-                String.format("%.2f", label2!!.points[0].entry.y)
+                text
             ).width()
 
             labelStyle2.draw(
                 context = context,
-                text = String.format("%.2f", label2!!.points[0].entry.y),
+                text = text,
                 x = maxOf(
                         minOf(
                             label2!!.canvasX,
@@ -316,44 +344,3 @@ open class ChartMarker(
         }
     }
 }
-
-/*
-class LineChartLayer(
-    lineProvider: LineProvider,
-    @SuppressLint("RestrictedApi") pointSpacingDp: Float = Defaults.POINT_SPACING,
-    rangeProvider: CartesianLayerRangeProvider = CartesianLayerRangeProvider.auto(),
-    verticalAxisPosition: Axis.Position.Vertical? = null,
-    drawingModelInterpolator:
-    CartesianLayerDrawingModelInterpolator<
-            LineCartesianLayerDrawingModel.PointInfo,
-            LineCartesianLayerDrawingModel,
-            > =
-        CartesianLayerDrawingModelInterpolator.default(),
-    drawingModelKey: ExtraStore.Key<LineCartesianLayerDrawingModel>,
-): LineCartesianLayer(
-    lineProvider, pointSpacingDp, rangeProvider, verticalAxisPosition, drawingModelInterpolator, drawingModelKey
-) {
-    override fun CartesianDrawingContext.updateMarkerTargets(
-        entry: LineCartesianLayerModel.Entry,
-        canvasX: Float,
-        canvasY: Float,
-        lineFillBitmap: Bitmap,
-    ) {
-        if (canvasX <= layerBounds.left - 1 || canvasX >= layerBounds.right + 1) return
-        val limitedCanvasY = canvasY.coerceIn(layerBounds.top, layerBounds.bottom)
-        _markerTargets
-            .getOrPut(entry.x) { listOf(MutableLineCartesianLayerMarkerTarget(entry.x, canvasX)) }
-            .first()
-            .points +=
-            LineCartesianLayerMarkerTarget.Point(
-                entry,
-                limitedCanvasY,
-                lineFillBitmap.getPixel(
-                    canvasX
-                        .roundToInt()
-                        .coerceIn(ceil(layerBounds.left).toInt(), layerBounds.right.toInt() - 1),
-                    limitedCanvasY.roundToInt(),
-                ),
-            )
-    }
-}*/
