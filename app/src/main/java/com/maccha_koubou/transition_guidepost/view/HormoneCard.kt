@@ -28,7 +28,11 @@ import androidx.compose.material3.Shapes
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -36,6 +40,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.maccha_koubou.transition_guidepost.model.TestRecord
+import com.maccha_koubou.transition_guidepost.storage.chartSetting
 import com.maccha_koubou.transition_guidepost.storage.e2Data
 import com.maccha_koubou.transition_guidepost.storage.tData
 import com.maccha_koubou.transition_guidepost.ui.theme.AddButtonColors
@@ -49,8 +54,10 @@ import com.maccha_koubou.transition_guidepost.ui.theme.White
 import com.maccha_koubou.transition_guidepost.ui.theme.cardColors
 import com.maccha_koubou.transition_guidepost.ui.theme.largeMainButtonColors
 import com.maccha_koubou.transition_guidepost.view.component.AddDataIconButton
+import com.maccha_koubou.transition_guidepost.view.component.AddHormoneDataMenu
 import com.maccha_koubou.transition_guidepost.view.component.ChartListSwitcher
 import com.maccha_koubou.transition_guidepost.view.component.MainButton
+import com.maccha_koubou.transition_guidepost.view.component.RegretMedicationRecordMenu
 import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
 import com.patrykandpatrick.vico.compose.cartesian.axis.rememberBottom
 import com.patrykandpatrick.vico.compose.cartesian.axis.rememberEnd
@@ -70,21 +77,31 @@ import com.patrykandpatrick.vico.core.common.shape.Corner
 import com.patrykandpatrick.vico.core.common.shape.CorneredShape
 import com.patrykandpatrick.vico.core.common.shape.CutCornerTreatment
 import com.patrykandpatrick.vico.core.common.shape.Shape
+import kotlinx.coroutines.delay
 import java.time.LocalDateTime
 
 
 const val hormoneCardTitle = "我的激素水平"
 
 @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
-@Preview
 @Composable
-fun HormoneCard() {
+fun HormoneCard(state: MutableState<Boolean>) {
+    val chartSetting = chartSetting().chartSetting.value
+    var isHormoneEmpty by remember { mutableStateOf(chartSetting.isHormoneEmpty) }
+
+    LaunchedEffect(Unit) {
+        while (true) {
+            isHormoneEmpty = chartSetting.isHormoneEmpty
+            delay(300L)
+        }
+    }
+
     Card(
         modifier = Modifier.fillMaxSize(),
         shape = RoundedCornerShape(12.dp),
         colors = cardColors
     ) {
-        when (e2Data.dataList.isEmpty() && tData.dataList.isEmpty()) {
+        when (isHormoneEmpty) {
             true -> EmptyHormoneContent()
             else -> HormoneContent()
         }
@@ -94,6 +111,8 @@ fun HormoneCard() {
 @Preview
 @Composable
 fun EmptyHormoneContent() {
+    var showAddDataMenu by remember { mutableStateOf(false) }
+
     Box(modifier = Modifier.fillMaxSize()) {
         Column {
 
@@ -128,9 +147,16 @@ fun EmptyHormoneContent() {
                     style = Typography.bodySmall,
                     textAlign = TextAlign.Center
                 )
-                MainButton(false, "添加数据", Icons.Filled.Add) { /* Add data */ }
+                MainButton(false, "添加数据", Icons.Filled.Add) {
+                    showAddDataMenu = true
+                }
             }
         }
+    }
+
+    // Show add data menu
+    if (showAddDataMenu) {
+        AddHormoneDataMenu { state -> showAddDataMenu = state }
     }
 }
 
@@ -138,6 +164,8 @@ fun EmptyHormoneContent() {
 @Preview
 @Composable
 fun HormoneContent() {
+    var showAddDataMenu by remember { mutableStateOf(false) }
+
     Box(modifier = Modifier.fillMaxSize()) {
         Column {
 
@@ -175,27 +203,7 @@ fun HormoneContent() {
                     }
                     // Add Data button
                     AddDataIconButton {
-                        /* Add data menu */
-
-                        /*
-                            !!!!!!!!!!!!!!!!!!!!!
-                            !!!!Only for test!!!!
-                            !!!!!!!!!!!!!!!!!!!!!
-                         */
-                        e2Data.dataList.apply {
-                            add(TestRecord(360.98f, LocalDateTime.of(2024, 3, 16, 0, 0, 0)))
-                            add(TestRecord(226.02f, LocalDateTime.of(2024, 7, 15, 0, 0, 0)))
-                        }
-
-                        tData.dataList.apply {
-                            add(TestRecord(25.02f, LocalDateTime.now()))
-                        }
-
-                        /*
-                            !!!!!!!!!!!!!!!!!!!!!
-                            !!!!Only for test!!!!
-                            !!!!!!!!!!!!!!!!!!!!!
-                         */
+                        showAddDataMenu = true
                     }
                 }
             }
@@ -209,5 +217,10 @@ fun HormoneContent() {
                 HormoneChart()
             }
         }
+    }
+
+    // Show add data menu
+    if (showAddDataMenu) {
+        AddHormoneDataMenu { state -> showAddDataMenu = state }
     }
 }

@@ -24,6 +24,8 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerColors
 import androidx.compose.material3.DatePickerDefaults
@@ -64,6 +66,7 @@ import com.maccha_koubou.transition_guidepost.ui.theme.Gray
 import com.maccha_koubou.transition_guidepost.ui.theme.Purple
 import com.maccha_koubou.transition_guidepost.ui.theme.Typography
 import com.maccha_koubou.transition_guidepost.ui.theme.White
+import com.maccha_koubou.transition_guidepost.ui.theme.cardColors
 import com.maccha_koubou.transition_guidepost.ui.theme.datePickerColors
 import com.maccha_koubou.transition_guidepost.ui.theme.titleBarColors
 import com.maccha_koubou.transition_guidepost.view.localNavController
@@ -82,7 +85,9 @@ fun EditDateScreen() {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
     var showDatePicker by remember { mutableStateOf(false) }
 
-    Column() {
+    Column(
+        Modifier.background(White)
+    ) {
         TopAppBar(
             title = { Text(text = "记录激素肯定治疗天数", style = Typography.titleLarge) },
             navigationIcon = {
@@ -106,7 +111,7 @@ fun EditDateScreen() {
                 InputButton(
                     true,
                     it,
-                    user.startDate?.toString() ?: "请填写治疗开始日期"
+                    user.startDate?.toString() ?: "点击选择治疗开始日期"
                 ) {
                     showDatePicker = true
                 }
@@ -147,36 +152,41 @@ fun StartDatePicker(state: (Boolean) -> Unit) {
             Row(Modifier.padding(24.dp, 8.dp, 0.dp, 0.dp)) {
                 DetailItem(true, true, "请选择您的激素肯定治疗开始日期") {}
             }
-            Box(
-                // Cut the unneeded part of the date picker
-                Modifier.height(520.dp).offset(y = -112.dp)
+            Card(
+                colors = cardColors,
+                shape = RoundedCornerShape(0.dp, 0.dp, 24.dp, 24.dp)
             ) {
-                DatePicker(
-                    state = datePickerState,
-                    colors = datePickerColors,
-                    modifier = Modifier.fillMaxSize(),
-                    title = {},
-                    headline = {
-                        /*DatePickerDefaults.DatePickerHeadline(
+                Box(
+                    // Cut the unneeded part of the date picker
+                    Modifier.height(520.dp).offset(y = -112.dp)
+                ) {
+                    DatePicker(
+                        state = datePickerState,
+                        colors = datePickerColors,
+                        modifier = Modifier.fillMaxSize(),
+                        title = {},
+                        headline = {
+                            /*DatePickerDefaults.DatePickerHeadline(
                             selectedDateMillis = datePickerState.selectedDateMillis,
                             displayMode = datePickerState.displayMode,
                             dateFormatter = dateFormatter,
                             modifier = Modifier.padding(24.dp, 0.dp, 12.dp, 12.dp)
                         )*/
-                    },
-                    showModeToggle = false
-                )
-                Column(Modifier.padding(24.dp, 0.dp, 18.dp, 16.dp).offset(y = 520.dp)) {
-                    SecondaryButton(true, "取消") { state(false) }
-                    MainButton(true, "确定") {
-                        datePickerState.selectedDateMillis?.let {
-                            // Transfer the datemillis into LocalDate
-                                time ->
-                            user.startDate =
-                                Instant.ofEpochMilli(time).atZone(ZoneId.systemDefault())
-                                    .toLocalDate()
-                        } ?: { state(false) }
-                        state(false)
+                        },
+                        showModeToggle = false
+                    )
+                    Column(Modifier.padding(24.dp, 0.dp, 18.dp, 16.dp).offset(y = 520.dp)) {
+                        SecondaryButton(true, "取消") { state(false) }
+                        MainButton(true, "确定") {
+                            datePickerState.selectedDateMillis?.let {
+                                // Transfer the datemillis into LocalDate
+                                    time ->
+                                user.startDate =
+                                    Instant.ofEpochMilli(time).atZone(ZoneId.systemDefault())
+                                        .toLocalDate()
+                            } ?: { state(false) }
+                            state(false)
+                        }
                     }
                 }
             }

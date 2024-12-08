@@ -29,6 +29,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.maccha_koubou.transition_guidepost.addTestData
 import com.maccha_koubou.transition_guidepost.navigation.NavDestination
+import com.maccha_koubou.transition_guidepost.storage.chartSetting
 import com.maccha_koubou.transition_guidepost.ui.theme.Black
 import com.maccha_koubou.transition_guidepost.ui.theme.DarkPurple
 import com.maccha_koubou.transition_guidepost.ui.theme.Gray
@@ -36,6 +37,7 @@ import com.maccha_koubou.transition_guidepost.ui.theme.Typography
 import com.maccha_koubou.transition_guidepost.ui.theme.White
 import com.maccha_koubou.transition_guidepost.ui.theme.navigationBarColors
 import com.maccha_koubou.transition_guidepost.view.component.EditDateScreen
+import com.maccha_koubou.transition_guidepost.view.component.InputHormoneScreen
 
 val localNavController = compositionLocalOf<NavController> {
     error("导航未被提供")
@@ -112,8 +114,11 @@ fun MainPage() {
                 composable(route = NavDestination.CollectionScreen.route) {
                     CollectionScreen()
                 }
-                composable(route = "edit_data_screen") {
+                composable(route = "edit_date_screen") {
                     EditDateScreen()
+                }
+                composable(route = "input_hormone_screen") {
+                    InputHormoneScreen()
                 }
             }
         }

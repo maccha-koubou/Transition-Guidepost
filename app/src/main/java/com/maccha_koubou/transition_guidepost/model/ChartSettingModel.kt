@@ -1,13 +1,8 @@
 package com.maccha_koubou.transition_guidepost.model
 
-import com.maccha_koubou.transition_guidepost.storage.chartDateSetting
-import com.maccha_koubou.transition_guidepost.storage.e2Data
-import com.maccha_koubou.transition_guidepost.storage.tData
-import java.time.Duration
-import java.time.LocalDate
-import java.time.temporal.ChronoUnit
+import androidx.compose.runtime.mutableStateOf
 
-class chartDateSetting(
+class ChartSetting(
     var hormoneChartFirstData: () -> RecordedData<DataRecord>,
     var hormoneChartSecondData: () -> RecordedData<DataRecord>,
     var medicationChartFirstData: () -> RecordedData<DataRecord>?,
@@ -80,4 +75,24 @@ class chartDateSetting(
     // The proportion of the displayed duration
     // in the total duration between the earliest date and latest date
     val displayedDurationProportion: Float? get() =  displayedDuration?.toFloat()?.div(totalDuration!!.toFloat())
+
+    val isHormoneEmpty get() =
+        hormoneChartFirstData().dataList.isEmpty()
+                &&
+                hormoneChartSecondData().dataList.isEmpty()
+
+    val isMedicationEmpty get() =
+        medicationChartFirstData()?.dataList?.isEmpty() ?: true
+                &&
+                medicationChartSecondData()?.dataList?.isEmpty() ?: true
+
+    val isBodyEmpty get() =
+        bodyChartFirstData()?.dataList?.isEmpty() ?: true
+                &&
+                bodyChartSecondData()?.dataList?.isEmpty() ?: true
+
+    val isHealthEmpty get() =
+        healthChartFirstData()?.dataList?.isEmpty() ?: true
+                &&
+                healthChartSecondData()?.dataList?.isEmpty() ?: true
 }

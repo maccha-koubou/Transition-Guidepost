@@ -20,7 +20,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.maccha_koubou.transition_guidepost.storage.chartDateSetting
 import com.maccha_koubou.transition_guidepost.storage.user
 import com.maccha_koubou.transition_guidepost.ui.theme.*
 import com.maccha_koubou.transition_guidepost.view.component.EditDateScreen
@@ -79,7 +78,7 @@ fun DurationBanner() {
         // Call the edit data screen
         if (showEditDateScreen) {
             val navController = localNavController.current
-            navController.navigate("edit_data_screen")
+            navController.navigate("edit_date_screen")
         }
     }
 }
