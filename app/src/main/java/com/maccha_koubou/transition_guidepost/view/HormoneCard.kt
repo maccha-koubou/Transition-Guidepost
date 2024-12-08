@@ -183,8 +183,8 @@ fun HormoneContent() {
                             !!!!!!!!!!!!!!!!!!!!!
                          */
                         e2Data.dataList.apply {
-                            add(TestRecord(1092.98f, LocalDateTime.of(2024, 3, 16, 0, 0, 0)))
-                            add(TestRecord(606.02f, LocalDateTime.of(2024, 7, 15, 0, 0, 0)))
+                            add(TestRecord(360.98f, LocalDateTime.of(2024, 3, 16, 0, 0, 0)))
+                            add(TestRecord(226.02f, LocalDateTime.of(2024, 7, 15, 0, 0, 0)))
                         }
 
                         tData.dataList.apply {

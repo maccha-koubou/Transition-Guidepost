@@ -15,6 +15,8 @@ interface RecordedData<out T: DataRecord>{
     var isAlarmActive: Boolean
     var alarmCycle: AlarmCycle?
     var dataList: MutableList<@UnsafeVariance T>
+
+    fun copy(): RecordedData<T>
 }
 
 interface BodyData
@@ -30,7 +32,30 @@ data class TestData(
     override var alarmCycle: AlarmCycle?,
 ): RecordedData<TestRecord>, BodyData {
     override var dataList = mutableListOf<TestRecord>()
-    override var displayedUnit = unit.keys.toList()[0]
+    var unitIndex = 0
+    override val displayedUnit get()= unit.keys.toList()[unitIndex]
+
+    constructor(
+        thisData: TestData,
+        dataList: MutableList<TestRecord> = thisData.dataList,
+        unitIndex: Int = thisData.unitIndex
+    ): this(
+        thisData.name,
+        thisData.color,
+        thisData.icon,
+        thisData.unit,
+        thisData.recommendationValue,
+        thisData.isDataActive,
+        thisData.isAlarmActive,
+        thisData.alarmCycle
+    ) {
+        this.dataList = dataList
+        this.unitIndex = unitIndex
+    }
+
+    override fun copy(): TestData {
+        return TestData(this)
+    }
 }
 
 data class MedicationData(
@@ -50,6 +75,26 @@ data class MedicationData(
         val newRecord = MedicationRecord(currentDosage.dosage, LocalDateTime.now())
         dataList.add(newRecord)
     }
+
+    constructor(
+        thisData: MedicationData,
+        currentDosage: Dosage = thisData.currentDosage,
+        dataList: MutableList<MedicationRecord> = thisData.dataList,
+    ): this(
+        thisData.name,
+        thisData.color,
+        thisData.icon,
+        thisData.defaultDosage,
+        thisData.isDataActive,
+        thisData.isAlarmActive,
+        thisData.alarmCycle
+    ) {
+        this.dataList = dataList
+    }
+
+    override fun copy(): MedicationData {
+        return MedicationData(this)
+    }
 }
 
 data class TimePointData(
@@ -62,6 +107,24 @@ data class TimePointData(
 ): RecordedData<TimePointRecord>, BodyData {
     override var dataList = mutableListOf<TimePointRecord>()
     override val displayedUnit = ""
+
+    constructor(
+        thisData: TimePointData,
+        dataList: MutableList<TimePointRecord> = thisData.dataList
+    ): this(
+        thisData.name,
+        thisData.color,
+        thisData.icon,
+        thisData.isDataActive,
+        thisData.isAlarmActive,
+        thisData.alarmCycle
+    ) {
+        this.dataList = dataList
+    }
+
+    override fun copy(): TimePointData {
+        return TimePointData(this)
+    }
 }
 
 data class BreastData(
@@ -74,6 +137,24 @@ data class BreastData(
 ): RecordedData<BreastRecord>, BodyData {
     override var dataList = mutableListOf<BreastRecord>()
     override val displayedUnit = ""
+
+    constructor(
+        thisData: BreastData,
+        dataList: MutableList<BreastRecord> = thisData.dataList
+    ): this(
+        thisData.name,
+        thisData.color,
+        thisData.icon,
+        thisData.isDataActive,
+        thisData.isAlarmActive,
+        thisData.alarmCycle
+    ) {
+        this.dataList = dataList
+    }
+
+    override fun copy(): BreastData {
+        return BreastData(this)
+    }
 }
 
 data class CycleData(
@@ -86,4 +167,22 @@ data class CycleData(
 ): RecordedData<CycleRecord>, BodyData {
     override var dataList = mutableListOf<CycleRecord>()
     override val displayedUnit = ""
+
+    constructor(
+        thisData: CycleData,
+        dataList: MutableList<CycleRecord> = thisData.dataList
+    ): this(
+        thisData.name,
+        thisData.color,
+        thisData.icon,
+        thisData.isDataActive,
+        thisData.isAlarmActive,
+        thisData.alarmCycle
+    ) {
+        this.dataList = dataList
+    }
+
+    override fun copy(): CycleData {
+        return CycleData(this)
+    }
 }

@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -19,6 +21,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.maccha_koubou.transition_guidepost.model.DataRecord
@@ -34,6 +37,7 @@ import com.maccha_koubou.transition_guidepost.ui.theme.Pink
 import com.maccha_koubou.transition_guidepost.ui.theme.Purple
 import com.maccha_koubou.transition_guidepost.ui.theme.Typography
 import com.maccha_koubou.transition_guidepost.ui.theme.White
+import com.maccha_koubou.transition_guidepost.ui.theme.cardColors
 import com.maccha_koubou.transition_guidepost.view.component.rememberMarker
 import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
 import com.patrykandpatrick.vico.compose.cartesian.axis.rememberAxisGuidelineComponent
@@ -84,8 +88,11 @@ fun HormoneChart() {
     val timeRange = mutableListOf(chartDateSetting.earliestDateTotal!!, chartDateSetting.endDate!!)
     val timeRangeAssistance = mutableListOf(0,0) // Only used for scroll the chart to the latest day
 
-    var data1 by remember { mutableStateOf(chartDateSetting.hormoneChartFirstData() as TestData) }
-    var data2 by remember { mutableStateOf(chartDateSetting.hormoneChartSecondData() as TestData) }
+    val data1Copy by remember { mutableStateOf(chartDateSetting.hormoneChartFirstData() as TestData) }
+    val data2Copy by remember { mutableStateOf(chartDateSetting.hormoneChartSecondData() as TestData) }
+
+    var data1 = data1Copy.copy()
+    var data2 = data2Copy.copy()
 
     // Is each data series is not empty
     var isData1Available by remember { mutableStateOf(data1.dataList.isNotEmpty()) }
@@ -104,6 +111,9 @@ fun HormoneChart() {
         if (totalContentWidth == 0f || chartDateSetting.displayedDurationProportion == null) {
             1f
         } else {
+            val testT = chartDateSetting
+                .hormoneChartFirstData()
+                .dataList.minOfOrNull {it.time.toLocalDate().toEpochDay()}
             containerWidth / (totalContentWidth * chartDateSetting.displayedDurationProportion!!)
         }
     }}
@@ -125,8 +135,12 @@ fun HormoneChart() {
             timeRange.add(chartDateSetting.endDate!!)
             timeRangeAssistance.add(0)
 
+            data1 = data1Copy.copy()
+            data2 = data2Copy.copy()
+
             data1.dataList = removeUnshownDate(removeSameDate(data1.dataList))
             data2.dataList = removeUnshownDate(removeSameDate(data2.dataList))
+
 
             isData1Available = data1.dataList.isNotEmpty()
             isData2Available = data2.dataList.isNotEmpty()
@@ -180,7 +194,6 @@ fun HormoneChart() {
                             y = data2.dataList.map { it.data }
                         )
                     }
-
                 }
             }
 
@@ -228,152 +241,162 @@ fun HormoneChart() {
         }
 
         // The chart itself
-        CartesianChartHost(
-            chart = rememberCartesianChart(
-                *listOfNotNull(
-                    // Nothing is shown in this layer
-                    rememberLineCartesianLayer(
-                        LineCartesianLayer.LineProvider.series(
-                            LineCartesianLayer.rememberLine(
-                                fill = remember { LineCartesianLayer.LineFill.single(fill(Color.Transparent)) },
-                                areaFill = null,
-                                thickness = 0.dp
+        Card(
+            modifier = Modifier.wrapContentSize(),
+            shape = RectangleShape,
+            colors = cardColors
+        ) {
+            CartesianChartHost(
+                chart = rememberCartesianChart(
+                    *listOfNotNull(
+                        // Nothing is shown in this layer
+                        rememberLineCartesianLayer(
+                            LineCartesianLayer.LineProvider.series(
+                                LineCartesianLayer.rememberLine(
+                                    fill = remember { LineCartesianLayer.LineFill.single(fill(Color.Transparent)) },
+                                    areaFill = null,
+                                    thickness = 0.dp
+                                )
                             )
-                        )
-                    ),
+                        ),
 
-                    if (isData1Available) {
-                        rememberLineCartesianLayer(
-                            LineCartesianLayer.LineProvider.series(
-                                LineCartesianLayer.rememberLine(
-                                    fill = remember {
-                                        LineCartesianLayer.LineFill.single(
-                                            fill(
-                                                color1
+                        if (isData1Available) {
+                            rememberLineCartesianLayer(
+                                LineCartesianLayer.LineProvider.series(
+                                    LineCartesianLayer.rememberLine(
+                                        fill = remember {
+                                            LineCartesianLayer.LineFill.single(
+                                                fill(
+                                                    color1
+                                                )
                                             )
-                                        )
-                                    },
-                                    areaFill = null,
-                                    thickness = 2.dp,
-                                    pointProvider = remember {
-                                        // Point style (circle) of the first data series
-                                        LineCartesianLayer.PointProvider.single(
-                                            LineCartesianLayer.Point(
-                                                ShapeComponent(
-                                                    fill = fill(White),
-                                                    shape = CorneredShape(
-                                                        Corner.FullyRounded,
-                                                        Corner.FullyRounded,
-                                                        Corner.FullyRounded,
-                                                        Corner.FullyRounded
+                                        },
+                                        areaFill = null,
+                                        thickness = 2.dp,
+                                        pointProvider = remember {
+                                            // Point style (circle) of the first data series
+                                            LineCartesianLayer.PointProvider.single(
+                                                LineCartesianLayer.Point(
+                                                    ShapeComponent(
+                                                        fill = fill(White),
+                                                        shape = CorneredShape(
+                                                            Corner.FullyRounded,
+                                                            Corner.FullyRounded,
+                                                            Corner.FullyRounded,
+                                                            Corner.FullyRounded
+                                                        ),
+                                                        strokeFill = fill(color1),
+                                                        strokeThicknessDp = 1.5f
                                                     ),
-                                                    strokeFill = fill(color1),
-                                                    strokeThicknessDp = 1.5f
-                                                ),
-                                                sizeDp = 10f
+                                                    sizeDp = 10f
+                                                )
                                             )
-                                        )
-                                    },
-                                    // Make the line polygonal instead of curved
-                                    pointConnector = remember {
-                                        LineCartesianLayer.PointConnector.cubic(
-                                            0f
-                                        )
-                                    }
-                                )
-                            ),
-                            verticalAxisPosition = Axis.Position.Vertical.Start
-                        )
-                    } else { null },
+                                        },
+                                        // Make the line polygonal instead of curved
+                                        pointConnector = remember {
+                                            LineCartesianLayer.PointConnector.cubic(
+                                                0f
+                                            )
+                                        }
+                                    )
+                                ),
+                                verticalAxisPosition = Axis.Position.Vertical.Start
+                            )
+                        } else {
+                            null
+                        },
 
-                    if (isData2Available) {
-                        rememberLineCartesianLayer(
-                            LineCartesianLayer.LineProvider.series(
-                                LineCartesianLayer.rememberLine(
-                                    fill = remember {
-                                        LineCartesianLayer.LineFill.single(
-                                            fill(
-                                                color2
+                        if (isData2Available) {
+                            rememberLineCartesianLayer(
+                                LineCartesianLayer.LineProvider.series(
+                                    LineCartesianLayer.rememberLine(
+                                        fill = remember {
+                                            LineCartesianLayer.LineFill.single(
+                                                fill(
+                                                    color2
+                                                )
                                             )
-                                        )
-                                    },
-                                    areaFill = null,
-                                    thickness = 2.dp,
-                                    pointProvider = remember {
-                                        // Point style (square) of the second data series
-                                        LineCartesianLayer.PointProvider.single(
-                                            LineCartesianLayer.Point(
-                                                ShapeComponent(
-                                                    fill = fill(White),
-                                                    strokeFill = fill(color2),
-                                                    strokeThicknessDp = 1.5f
-                                                ),
-                                                sizeDp = 10f
+                                        },
+                                        areaFill = null,
+                                        thickness = 2.dp,
+                                        pointProvider = remember {
+                                            // Point style (square) of the second data series
+                                            LineCartesianLayer.PointProvider.single(
+                                                LineCartesianLayer.Point(
+                                                    ShapeComponent(
+                                                        fill = fill(White),
+                                                        strokeFill = fill(color2),
+                                                        strokeThicknessDp = 1.5f
+                                                    ),
+                                                    sizeDp = 10f
+                                                )
                                             )
-                                        )
-                                    },
-                                    // Make the line polygonal instead of curved
-                                    pointConnector = remember {
-                                        LineCartesianLayer.PointConnector.cubic(
-                                            0f
-                                        )
-                                    }
-                                )
-                            ),
-                            verticalAxisPosition = Axis.Position.Vertical.End,
-                        )
-                    } else { null }
-                ).toTypedArray(),
-                startAxis = VerticalAxis.rememberStart(
-                    line = axisLine,
-                    label = rememberAxisLabelComponent(color1),
-                    tick = axisLine,
-                    tickLength = 0.dp,
-                    guideline = axisGuideline
-                ),
-                endAxis = VerticalAxis.rememberEnd(
-                    line = axisLine,
-                    label = rememberAxisLabelComponent(color2),
-                    tick = axisLine,
-                    tickLength = 0.dp,
-                    guideline = axisLine
-                ),
-                bottomAxis = HorizontalAxis.rememberBottom(
-                    line = rememberAxisLineComponent(fill(LightPurple), 1.dp),
-                    valueFormatter = { _, x, _ ->
-                        val date = LocalDate.ofEpochDay(x.toLong())
-                        val formatter = DateTimeFormatter.ofPattern("M月d日")
-                        date.format(formatter)
-                    },
-                    label = rememberAxisLabelComponent(Gray),
-                    tick = rememberAxisTickComponent(fill(LightPurple), 2.dp),
-                    guideline = rememberAxisGuidelineComponent(fill(Color.Transparent)),
-                    itemPlacer = HorizontalAxis.ItemPlacer.aligned(90)
-                ),
-                // The recommendation range box of the first data series
-                decorations = recommendationRangeBox,
-                marker = rememberMarker(
-                    data1,
-                    data2
+                                        },
+                                        // Make the line polygonal instead of curved
+                                        pointConnector = remember {
+                                            LineCartesianLayer.PointConnector.cubic(
+                                                0f
+                                            )
+                                        }
+                                    )
+                                ),
+                                verticalAxisPosition = Axis.Position.Vertical.End,
+                            )
+                        } else {
+                            null
+                        }
+                    ).toTypedArray(),
+                    startAxis = VerticalAxis.rememberStart(
+                        line = axisLine,
+                        label = rememberAxisLabelComponent(color1),
+                        tick = axisLine,
+                        tickLength = 0.dp,
+                        guideline = axisGuideline
+                    ),
+                    endAxis = VerticalAxis.rememberEnd(
+                        line = axisLine,
+                        label = rememberAxisLabelComponent(color2),
+                        tick = axisLine,
+                        tickLength = 0.dp,
+                        guideline = axisLine
+                    ),
+                    bottomAxis = HorizontalAxis.rememberBottom(
+                        line = rememberAxisLineComponent(fill(LightPurple), 1.dp),
+                        valueFormatter = { _, x, _ ->
+                            val date = LocalDate.ofEpochDay(x.toLong())
+                            val formatter = DateTimeFormatter.ofPattern("M月d日")
+                            date.format(formatter)
+                        },
+                        label = rememberAxisLabelComponent(Gray),
+                        tick = rememberAxisTickComponent(fill(LightPurple), 2.dp),
+                        guideline = rememberAxisGuidelineComponent(fill(Color.Transparent)),
+                        itemPlacer = HorizontalAxis.ItemPlacer.aligned(90)
+                    ),
+                    // The recommendation range box of the first data series
+                    decorations = recommendationRangeBox,
+                    marker = rememberMarker(
+                        data1,
+                        data2
                     )
-            ),
-            modelProducer = modelProducer,
-            modifier = Modifier.fillMaxSize(),
-            scrollState = rememberVicoScrollState(
-                // Disable scroll but scroll to the end of the chart by default
-                scrollEnabled = false,
-                initialScroll = Scroll.Absolute.End,
-                autoScroll = Scroll.Absolute.End,
-                autoScrollCondition = AutoScrollCondition.OnModelSizeIncreased
-            ),
+                ),
+                modelProducer = modelProducer,
+                modifier = Modifier.fillMaxSize(),
+                scrollState = rememberVicoScrollState(
+                    // Disable scroll but scroll to the end of the chart by default
+                    scrollEnabled = false,
+                    initialScroll = Scroll.Absolute.End,
+                    autoScroll = Scroll.Absolute.End,
+                    autoScrollCondition = AutoScrollCondition.OnModelSizeIncreased
+                ),
 
-            zoomState = rememberVicoZoomState(
-                zoomEnabled = true,
-                initialZoom = zoomState,
-                minZoom = zoomState,
-                maxZoom = zoomState
+                zoomState = rememberVicoZoomState(
+                    zoomEnabled = true,
+                    initialZoom = zoomState,
+                    minZoom = zoomState,
+                    maxZoom = zoomState
+                )
             )
-        )
+        }
     }
 }
 
@@ -400,7 +423,8 @@ private fun removeSameDate(list: MutableList<TestRecord>): MutableList<TestRecor
  */
 private fun removeUnshownDate(list: MutableList<TestRecord>): MutableList<TestRecord> {
     val latestUnshownDate = list
-        .filter { it.time.toLocalDate().toEpochDay() < chartDateSetting.finalStartDate!! }
+        .filter { it.time.toLocalDate().toEpochDay() <
+                chartDateSetting.finalStartDate!! - chartDateSetting.customizedDuration * 0.1 }
         .maxByOrNull { it.time }
         ?.time
     return if (latestUnshownDate != null) {
@@ -431,7 +455,7 @@ private fun recommendationRangeBoxOrNull(
 
         // This value is used to extend the recommendation range box
         // to a little higher position for a better look
-        val largestDataInTheChartWithMarginal = largestDataInTheChart * 1.03f
+        val largestDataInTheChartWithMarginal = largestDataInTheChart * 1.1f
 
         // If the recommendation range's lower edge can be shown in this chart
         if (recommendationLowerRange < largestDataInTheChartWithMarginal) {
