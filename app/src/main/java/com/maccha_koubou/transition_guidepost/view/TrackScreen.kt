@@ -1,5 +1,6 @@
 package com.maccha_koubou.transition_guidepost.view
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -18,6 +19,7 @@ import com.maccha_koubou.transition_guidepost.storage.e2Data
 import com.maccha_koubou.transition_guidepost.storage.tData
 import com.maccha_koubou.transition_guidepost.ui.theme.BackgroundGray
 
+@SuppressLint("NewApi")
 @Composable
 fun TrackScreen() {
     Column(Modifier.fillMaxSize()) {

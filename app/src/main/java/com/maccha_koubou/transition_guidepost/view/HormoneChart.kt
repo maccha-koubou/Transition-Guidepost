@@ -21,7 +21,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.maccha_koubou.transition_guidepost.model.DataRecord
 import com.maccha_koubou.transition_guidepost.model.TestData
+import com.maccha_koubou.transition_guidepost.model.TestRecord
 import com.maccha_koubou.transition_guidepost.storage.chartDateSetting
 import com.maccha_koubou.transition_guidepost.storage.e2Data
 import com.maccha_koubou.transition_guidepost.storage.tData
@@ -90,6 +92,8 @@ fun HormoneChart() {
     val firstColor = chartDateSetting.hormoneChartFirstData().color
     val secondColor = chartDateSetting.hormoneChartSecondData().color
 
+    var recommendationRangeBox by remember { mutableStateOf(listOf<HorizontalBox>()) }
+
     // To only show the data within the customized date duration
     val zoomState = remember { Zoom { context, horizontalDimensions, bounds ->
         val totalContentWidth = horizontalDimensions.getScalableContentWidth(context)
@@ -121,6 +125,31 @@ fun HormoneChart() {
             isData1Available = chartDateSetting.hormoneChartFirstData().dataList.isNotEmpty()
             isData2Available = chartDateSetting.hormoneChartSecondData().dataList.isNotEmpty()
 
+            recommendationRangeBox = listOfNotNull(
+                if (isData1Available) {
+                    recommendationRangeBoxOrNull(
+                        (chartDateSetting.hormoneChartFirstData() as TestData)
+                            .recommendationValue,
+                        removeSameDate(
+                            chartDateSetting.hormoneChartFirstData().dataList
+                        ).maxOf { it.data },
+                        firstColor,
+                        Axis.Position.Vertical.Start
+                    )
+                } else { null },
+                if (isData2Available) {
+                    recommendationRangeBoxOrNull(
+                        (chartDateSetting.hormoneChartSecondData() as TestData)
+                            .recommendationValue,
+                        removeSameDate(
+                            chartDateSetting.hormoneChartSecondData().dataList
+                        ).maxOf { it.data },
+                        secondColor,
+                        Axis.Position.Vertical.End
+                    )
+                } else { null }
+            )
+
             modelProducer.runTransaction {
                 // The first series used to keep the chart
                 // including the earliest and latest date of all data
@@ -132,25 +161,31 @@ fun HormoneChart() {
                 if (isData1Available) {
                     lineSeries {
                         series(
-                            x = chartDateSetting.hormoneChartFirstData().dataList.map {
+                            x = removeSameDate(
+                                chartDateSetting.hormoneChartFirstData().dataList
+                            ).map {
                                 it.time.toLocalDate().toEpochDay()
                             },
-                            y = chartDateSetting.hormoneChartFirstData().dataList.map { it.data })
+                            y = removeSameDate(
+                                chartDateSetting.hormoneChartFirstData().dataList
+                            ).map { it.data })
                     }
                 }
                 if (isData2Available) {
                     lineSeries {
                         series(
-                            x = chartDateSetting.hormoneChartSecondData().dataList.map {
+                            x = removeSameDate(
+                                chartDateSetting.hormoneChartSecondData().dataList
+                            ).map {
                                 it.time.toLocalDate().toEpochDay()
                             },
-                            y = chartDateSetting.hormoneChartSecondData().dataList.map { it.data })
+                            y = removeSameDate(
+                                chartDateSetting.hormoneChartSecondData().dataList
+                            ).map { it.data })
                     }
 
                 }
             }
-
-
 
             timeRange.removeLast()
             timeRangeAssistance.removeLast()
@@ -319,24 +354,7 @@ fun HormoneChart() {
                     itemPlacer = HorizontalAxis.ItemPlacer.aligned(90)
                 ),
                 // The recommendation range box of the first data series
-                decorations = listOfNotNull(
-                    if (isData1Available) {
-                        recommendationRangeBoxOrNull(
-                            (chartDateSetting.hormoneChartFirstData() as TestData).recommendationValue,
-                            chartDateSetting.hormoneChartFirstData().dataList.maxOf { it.data },
-                            firstColor,
-                            Axis.Position.Vertical.Start
-                        )
-                    } else { null },
-                    if (isData2Available) {
-                        recommendationRangeBoxOrNull(
-                            (chartDateSetting.hormoneChartSecondData() as TestData).recommendationValue,
-                            chartDateSetting.hormoneChartSecondData().dataList.maxOf { it.data },
-                            secondColor,
-                            Axis.Position.Vertical.End
-                        )
-                    } else { null }
-                ),
+                decorations = recommendationRangeBox,
                 marker = rememberMarker(
                     chartDateSetting.hormoneChartFirstData(),
                     chartDateSetting.hormoneChartSecondData()
@@ -360,6 +378,23 @@ fun HormoneChart() {
             )
         )
     }
+}
+
+/**
+ * Remove the data with the same date information,
+ * and only left the data in the latter place in the list
+ */
+private fun removeSameDate(list: MutableList<DataRecord>): MutableList<TestRecord> {
+    list as MutableList<TestRecord>
+    val finalList = mutableListOf<TestRecord>()
+    val existingTime = mutableListOf<LocalDate>()
+    list.asReversed().forEach{
+        if (it.time.toLocalDate() !in existingTime) {
+            existingTime.add(it.time.toLocalDate())
+            finalList.add(it)
+        }
+    }
+    return finalList.asReversed()
 }
 
 /**
